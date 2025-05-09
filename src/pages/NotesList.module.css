@@ -1,0 +1,221 @@
+/* NotesList.module.css */
+
+/* Contenedor de la tarjeta + botones en una sola fila */
+.itemContent {
+    display: flex;
+    justify-content: space-evenly;
+        gap: 1rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: stretch;
+  }
+  
+  /* Columna de botones */
+  .actions {
+    display: flex;
+    flex-direction: column; /* apila Editar / Eliminar */
+    gap: 0.5rem;            /* separación vertical */
+    margin-left: auto;      /* empuja la columna al extremo derecho */
+  }
+  
+
+  
+  /* Ejemplo de colores ya existentes */
+  .linkEdit {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .linkDelete {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+.container {
+    margin: 100px auto 0 auto; /* Espacio debajo del navbar */
+    max-width: 450px;
+    padding: 20px;
+    border: 1px solid #5a5959;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(to bottom, rgba(241, 241, 244, 0.9), rgba(0, 0, 0, 0.1))!important;
+    font-family: sans-serif;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin: 0;
+    color: #111827;
+    text-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px !important;
+  }
+  
+  .btn {
+    color: #07152c;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: 1px solid rgba(59, 130, 256, 0.12);
+    border-radius: 0.5rem;
+    background-color: #f8f9fc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.5);
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background-color: #d1ebf8;
+    
+    border: 1px solid #feffff;
+  }
+
+  
+  .btnDanger {
+    background: #ef4444;
+    color: #fff;
+  }
+
+  .btnDanger:hover {
+    background: #f65e5e;
+    color: #fff;
+  }
+  
+  .btnNew {
+    background: #10b981;
+    color: #fff;
+    margin: 1rem 0;
+  }
+
+  .btnNew:hover {
+    background: #0fcb8c;
+    color: #fff;
+    margin: 1rem 0;
+  }
+  
+  .spinner {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+  
+  .empty {
+    text-align: center;
+    margin: 2rem 0;
+    color: #e2e8f0;
+  }
+  
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .item {
+    background: linear-gradient(to bottom, rgba(225, 225, 228, 0.7), rgba(0, 0, 0, 0.1))!important;
+    color: #111;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.5);
+  }
+  
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    
+  }
+  
+  .link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  
+  .linkEdit {
+    color: #f9f7f7;
+  
+    padding: 10px 20px;
+    text-decoration: none;
+    border: 1px solid rgba(59, 130, 256, 0.12);
+    border-radius: 0.5rem;
+    background-color: #4285f4;
+    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.5);
+    margin-right: 10px;
+    cursor: pointer;
+}
+  
+.linkEdit:hover {
+    background-color: #3fbcf6;
+    color: #fff;
+    border: 1px solid #d9eaf4;
+  }
+
+
+  .linkDelete {
+    
+    color: #f9f7f7;
+  
+    padding: 10px 20px;
+    text-decoration: none;
+    border: 1px solid rgba(59, 130, 256, 0.12);
+    border-radius: 0.5rem;
+    background-color: #ef4444;
+    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.5);
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  .linkDelete:hover {
+    background-color: #f65e5e;
+    color: #fff;
+    border: 1px solid #f0d2d2;
+  }
+  
+  
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .btn, .btnDanger .linkEdit {
+      width: 100%;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+
+    .item {
+      flex-direction: column;
+    }
+    .actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .itemContent {
+        width: 102%;
+        flex-direction: column;
+        
+        
+      }
+  }
+  

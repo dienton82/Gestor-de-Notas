@@ -1,0 +1,14 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities"; 
+
+/* Estilos comunes */
+html, body {
+ 
+  background: linear-gradient(66deg, #daedee, #aabcda);
+  
+}
+
+
+
+

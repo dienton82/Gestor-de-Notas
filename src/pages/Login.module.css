@@ -1,0 +1,99 @@
+/* Login.module.css */
+.container {
+    margin: 100px auto 0 auto; /* Espacio debajo del navbar */
+    max-width: 450px;
+    padding: 20px;
+    border: 1px solid #5a5959;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(to bottom, rgba(241, 241, 244, 0.9), rgba(0, 0, 0, 0.1))!important;
+    font-family: sans-serif;
+  }
+  
+  .heading {
+    text-align: center;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    text-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px !important;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .field {
+    margin-bottom: 1rem;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    text-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px !important;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #101c2a;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .button {
+    color: #f9f7f7;
+  
+    padding: 10px 20px;
+    text-decoration: none;
+    border: 1px solid rgba(59, 130, 256, 0.12);
+    border-radius: 0.5rem;
+    background-color: #4285f4;
+    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.5);
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: #3fbcf6;
+    color: #fff;
+    border: 1px solid #d9eaf4;
+  }
+  
+  .buttonDisabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .error {
+    margin-top: 1rem;
+    color: #e53e3e;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+  
+  /* MOBILE */
+  @media (max-width: 480px) {
+    .container {
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .heading {
+      font-size: 1.5rem;
+    }
+    .label {
+      font-size: 0.875rem;
+    }
+    .input {
+      padding: 0.4rem;
+      font-size: 0.875rem;
+    }
+    .button {
+      padding: 0.6rem;
+      font-size: 0.95rem;
+    }
+  }
+  

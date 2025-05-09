@@ -1,0 +1,17 @@
+# Dependencias
+/node_modules
+
+# Build output
+/dist
+/build
+
+# Variables de entorno
+.env
+
+# Cachés de Vite / VSCode
+.vite
+.history
+
+# Logs
+npm-debug.log*
+yarn-debug.log*

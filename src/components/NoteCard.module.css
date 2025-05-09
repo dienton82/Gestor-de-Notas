@@ -1,0 +1,50 @@
+/* NoteCard.module.css */
+.card {
+    background: #e0dede!important;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border: 0.1px solid rgba(0, 0, 0, 09);
+    cursor: pointer;
+    width: 62%;
+  }
+  
+  .card:hover {
+    background: #ffffff!important;
+    transform: translateY(-2px);
+  }
+  
+  .title {
+    margin: 0 0 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .content {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #121314;
+    line-height: 1.4;
+  }
+
+  
+  
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .card {
+      padding: 0.75rem;
+      align-items: normal;
+      width: 90%;
+    }
+    .title {
+      font-size: 1rem;
+    }
+    .content {
+      font-size: 0.8rem;
+    }
+
+  
+ 
+  }
+  
