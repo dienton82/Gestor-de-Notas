@@ -4,8 +4,9 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  base: '/Gestor-de-Notas/',   // ← Asegúrate de que coincide con tu repo
   plugins: [
-    vue(),          // ← procesa .vue
-    tailwindcss()   // ← genera utilidades Tailwind
+    vue(),
+    tailwindcss()
   ]
 })
