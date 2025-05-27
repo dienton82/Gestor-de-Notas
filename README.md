@@ -115,6 +115,12 @@ Password: Prolibu2025!
 
 ---
 
+## 📷 Capturas
+
+![Pantalla principal](public/gestorNotas.webp)
+
+---
+
 ## 📄 Licencia
 
 Este proyecto está bajo la licencia MIT.  
