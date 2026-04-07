@@ -79,12 +79,12 @@
   min-height: 46px;
   width: fit-content;
   padding: 0.78rem 1rem;
-  border: 1px solid var(--app-border);
+  border: 1px solid var(--btn-light-border);
   border-radius: var(--app-radius-sm);
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--app-text);
+  background: var(--btn-light-bg);
+  color: var(--btn-light-text);
   font-weight: 600;
-  box-shadow: var(--app-shadow-soft);
+  box-shadow: var(--btn-light-shadow);
   cursor: pointer;
   transition:
     transform 180ms ease,
@@ -94,9 +94,13 @@
 }
 
 .fileButton:hover {
-  transform: translateY(-1px);
-  background: rgba(31, 41, 55, 0.06);
-  border-color: rgba(31, 41, 55, 0.18);
+  transform: translateY(-2px);
+  box-shadow: var(--btn-light-shadow-hover);
+}
+
+.fileButton:active {
+  transform: translateY(0);
+  box-shadow: var(--btn-light-shadow-pressed);
 }
 
 .fileButton:focus-visible {
@@ -146,37 +150,51 @@
   width: 100%;
   padding: 0.82rem 1rem;
   border-radius: var(--app-radius-sm);
-  border: 1px solid transparent;
+  border: 1px solid var(--btn-light-border);
   font-weight: 700;
-  box-shadow: var(--app-shadow-soft);
+  box-shadow: var(--btn-light-shadow);
   cursor: pointer;
   transition:
     transform 180ms ease,
     background-color 180ms ease,
     color 180ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 .submitBtn {
-  background: linear-gradient(180deg, #293445 0%, #1f2937 100%);
-  color: #fff;
-  border-color: rgba(31, 41, 55, 0.16);
+  background: var(--btn-dark-bg);
+  color: var(--btn-dark-text);
+  border-color: var(--btn-dark-border);
+  box-shadow: var(--btn-dark-shadow);
 }
 
 .submitBtn:hover {
-  transform: translateY(-1px);
-  background: linear-gradient(180deg, #374151 0%, #273244 100%);
+  transform: translateY(-2px);
+  background: var(--btn-dark-bg);
+  box-shadow: var(--btn-dark-shadow-hover);
+}
+
+.submitBtn:active {
+  transform: translateY(0);
+  box-shadow: var(--btn-dark-shadow-pressed);
 }
 
 .cancelBtn {
-  background: rgba(255, 255, 255, 0.6);
-  color: var(--app-text);
-  border-color: var(--app-border);
+  background: var(--btn-light-bg);
+  color: var(--btn-light-text);
+  border-color: var(--btn-light-border);
+  box-shadow: var(--btn-light-shadow);
 }
 
 .cancelBtn:hover {
-  transform: translateY(-1px);
-  background: rgba(31, 41, 55, 0.06);
+  transform: translateY(-2px);
+  box-shadow: var(--btn-light-shadow-hover);
+}
+
+.cancelBtn:active {
+  transform: translateY(0);
+  box-shadow: var(--btn-light-shadow-pressed);
 }
 
 .buttonIcon {

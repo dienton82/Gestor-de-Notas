@@ -21,6 +21,48 @@
   --app-primary-soft: #f3f4f6;
   --app-danger: #b45469;
   --app-danger-soft: rgba(190, 98, 123, 0.1);
+  --btn-light-bg: linear-gradient(145deg, #f7f9fc 0%, #e7edf5 100%);
+  --btn-light-text: #223046;
+  --btn-light-border: rgba(255, 255, 255, 0.72);
+  --btn-light-shadow:
+    -7px -7px 14px rgba(255, 255, 255, 0.88),
+    9px 9px 18px rgba(164, 180, 200, 0.3),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.62);
+  --btn-light-shadow-hover:
+    -8px -8px 16px rgba(255, 255, 255, 0.92),
+    12px 12px 22px rgba(157, 173, 194, 0.34),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.72);
+  --btn-light-shadow-pressed:
+    inset 4px 4px 10px rgba(167, 182, 202, 0.28),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.88);
+  --btn-dark-bg: linear-gradient(145deg, #29405f 0%, #16263e 100%);
+  --btn-dark-text: #f8fbff;
+  --btn-dark-border: rgba(173, 206, 255, 0.18);
+  --btn-dark-shadow:
+    0 14px 24px rgba(13, 27, 50, 0.24),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.18),
+    inset -1px -1px 0 rgba(6, 15, 28, 0.24);
+  --btn-dark-shadow-hover:
+    0 18px 28px rgba(12, 26, 48, 0.28),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.22),
+    inset -1px -1px 0 rgba(6, 15, 28, 0.28);
+  --btn-dark-shadow-pressed:
+    inset 5px 5px 12px rgba(11, 23, 42, 0.34),
+    inset -3px -3px 10px rgba(78, 108, 150, 0.16);
+  --btn-danger-bg: linear-gradient(145deg, rgba(247, 232, 236, 0.95) 0%, rgba(237, 214, 221, 0.96) 100%);
+  --btn-danger-text: #a24b60;
+  --btn-danger-border: rgba(255, 255, 255, 0.7);
+  --btn-danger-shadow:
+    -6px -6px 12px rgba(255, 255, 255, 0.82),
+    8px 8px 18px rgba(196, 159, 172, 0.22),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.55);
+  --btn-danger-shadow-hover:
+    -7px -7px 14px rgba(255, 255, 255, 0.88),
+    10px 10px 20px rgba(196, 152, 167, 0.28),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.65);
+  --btn-danger-shadow-pressed:
+    inset 4px 4px 10px rgba(198, 157, 171, 0.28),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.84);
   --app-radius-sm: 10px;
   --app-radius-md: 16px;
   --app-radius-lg: 22px;

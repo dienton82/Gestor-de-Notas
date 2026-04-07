@@ -48,15 +48,16 @@
   gap: 0.55rem;
   padding: 0.74rem 1rem;
   border-radius: var(--app-radius-sm);
-  border: 1px solid transparent;
+  border: 1px solid var(--btn-light-border);
   font-weight: 600;
   line-height: 1;
-  box-shadow: var(--app-shadow-soft);
+  box-shadow: var(--btn-light-shadow);
   transition:
     transform 180ms ease,
     background-color 180ms ease,
     color 180ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms ease,
+    border-color 180ms ease;
   cursor: pointer;
 }
 
@@ -68,41 +69,71 @@
 .linkEdit:hover,
 .linkDelete:hover,
 .pagination button:hover:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn {
-  background: rgba(255, 255, 255, 0.84);
-  color: var(--app-text);
-  border-color: var(--app-border);
+  background: var(--btn-light-bg);
+  color: var(--btn-light-text);
+  border-color: var(--btn-light-border);
+}
+
+.btn:active,
+.linkEdit:active,
+.linkDelete:active,
+.pagination button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .linkDelete,
 .btnSecondary {
-  background: var(--app-danger-soft);
-  color: var(--app-danger);
-  border-color: rgba(214, 79, 79, 0.14);
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+  border-color: var(--btn-danger-border);
+  box-shadow: var(--btn-danger-shadow);
 }
 
 .btnDanger:hover,
 .linkDelete:hover,
 .btnSecondary:hover {
-  background: #d95858;
-  color: #fff;
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+  box-shadow: var(--btn-danger-shadow-hover);
 }
 
 .linkEdit,
 .btnPrimary,
 .pagination button {
-  background: linear-gradient(180deg, #293445 0%, #1f2937 100%);
-  color: #fff;
-  border-color: rgba(31, 41, 55, 0.16);
+  background: var(--btn-dark-bg);
+  color: var(--btn-dark-text);
+  border-color: var(--btn-dark-border);
+  box-shadow: var(--btn-dark-shadow);
 }
 
 .linkEdit:hover,
 .btnPrimary:hover,
 .pagination button:hover:not(:disabled) {
-  background: linear-gradient(180deg, #374151 0%, #273244 100%);
+  background: var(--btn-dark-bg);
+  box-shadow: var(--btn-dark-shadow-hover);
+}
+
+.btn:not(.btnPrimary):not(.btnSecondary):hover {
+  box-shadow: var(--btn-light-shadow-hover);
+}
+
+.btn:not(.btnPrimary):not(.btnSecondary):active {
+  box-shadow: var(--btn-light-shadow-pressed);
+}
+
+.btnSecondary:active,
+.linkDelete:active {
+  box-shadow: var(--btn-danger-shadow-pressed);
+}
+
+.btnPrimary:active,
+.linkEdit:active,
+.pagination button:active:not(:disabled) {
+  box-shadow: var(--btn-dark-shadow-pressed);
 }
 
 .searchField {
@@ -379,6 +410,7 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 @media (max-width: 860px) {

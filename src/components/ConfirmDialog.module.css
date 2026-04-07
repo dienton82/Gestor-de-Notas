@@ -76,7 +76,7 @@
   min-height: 42px;
   padding: 0.72rem 1rem;
   border-radius: 10px;
-  border: 1px solid transparent;
+  border: 1px solid var(--btn-light-border);
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -89,31 +89,42 @@
 }
 
 .secondaryButton {
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--app-text);
-  border-color: var(--app-border);
-  box-shadow: var(--app-shadow-soft);
+  background: var(--btn-light-bg);
+  color: var(--btn-light-text);
+  border-color: var(--btn-light-border);
+  box-shadow: var(--btn-light-shadow);
 }
 
 .secondaryButton:hover,
 .dangerButton:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .secondaryButton:hover {
-  background: rgba(31, 41, 55, 0.05);
+  box-shadow: var(--btn-light-shadow-hover);
+}
+
+.secondaryButton:active {
+  transform: translateY(0);
+  box-shadow: var(--btn-light-shadow-pressed);
 }
 
 .dangerButton {
-  background: var(--app-danger-soft);
-  color: var(--app-danger);
-  border-color: rgba(180, 84, 105, 0.16);
-  box-shadow: var(--app-shadow-soft);
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+  border-color: var(--btn-danger-border);
+  box-shadow: var(--btn-danger-shadow);
 }
 
 .dangerButton:hover {
-  background: #d95858;
-  color: #fff;
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+  box-shadow: var(--btn-danger-shadow-hover);
+}
+
+.dangerButton:active {
+  transform: translateY(0);
+  box-shadow: var(--btn-danger-shadow-pressed);
 }
 
 .secondaryButton:focus-visible,
