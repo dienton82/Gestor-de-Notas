@@ -2,26 +2,41 @@
 .formContainer {
   width: min(92%, 480px);
   margin: 84px auto 0;
-  padding: 1.75rem;
-  border: 1px solid var(--app-border);
-  border-radius: var(--app-radius-lg);
+  padding: 1.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 28px;
   box-shadow: var(--app-shadow);
   background: var(--app-surface);
   backdrop-filter: blur(14px);
+  position: relative;
+  overflow: hidden;
+}
+
+.formContainer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(224, 174, 58, 0.12), transparent 24%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.56), transparent 28%);
+  pointer-events: none;
 }
 
 .heading {
-  margin: 0 0 1.15rem;
+  position: relative;
+  margin: 0 0 1.25rem;
   text-align: center;
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-size: 1.95rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
   color: var(--app-text);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .form {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .field {
@@ -30,23 +45,25 @@
 
 .label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.92rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: var(--app-text);
+  color: #304257;
 }
 
 .input,
 .textarea,
 .fileInput {
   width: 100%;
-  padding: 0.82rem 0.95rem;
-  border: 1px solid var(--app-border-strong);
-  border-radius: var(--app-radius-sm);
+  padding: 0.88rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 16px;
   font-size: 0.96rem;
   color: var(--app-text);
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: inset 0 1px 2px rgba(18, 32, 52, 0.04);
+  background: var(--app-surface-panel);
+  box-shadow:
+    0 10px 22px rgba(73, 92, 118, 0.08),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.78);
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -76,11 +93,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  min-height: 46px;
+  min-height: 50px;
   width: fit-content;
-  padding: 0.78rem 1rem;
+  padding: 0.82rem 1.08rem;
   border: 1px solid var(--btn-light-border);
-  border-radius: var(--app-radius-sm);
+  border-radius: 16px;
   background: var(--btn-light-bg);
   color: var(--btn-light-text);
   font-weight: 600;
@@ -110,12 +127,12 @@
 
 .fileName {
   color: var(--app-text-soft);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   line-height: 1.4;
 }
 
 .textarea {
-  min-height: 140px;
+  min-height: 156px;
   resize: vertical;
 }
 
@@ -123,8 +140,10 @@
 .textarea:focus,
 .fileInput:focus {
   outline: none;
-  border-color: rgba(33, 87, 213, 0.45);
-  box-shadow: 0 0 0 4px rgba(33, 87, 213, 0.12);
+  border-color: rgba(224, 174, 58, 0.34);
+  box-shadow:
+    0 0 0 4px rgba(224, 174, 58, 0.16),
+    0 14px 24px rgba(73, 92, 118, 0.1);
   background: #fff;
 }
 
@@ -148,8 +167,9 @@
   justify-content: center;
   gap: 0.55rem;
   width: 100%;
-  padding: 0.82rem 1rem;
-  border-radius: var(--app-radius-sm);
+  min-height: 52px;
+  padding: 0.88rem 1rem;
+  border-radius: 16px;
   border: 1px solid var(--btn-light-border);
   font-weight: 700;
   box-shadow: var(--btn-light-shadow);
@@ -167,6 +187,20 @@
   color: var(--btn-dark-text);
   border-color: var(--btn-dark-border);
   box-shadow: var(--btn-dark-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.submitBtn::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 26px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(224, 174, 58, 0.42) 0%, rgba(224, 174, 58, 0) 100%);
+  pointer-events: none;
 }
 
 .submitBtn:hover {

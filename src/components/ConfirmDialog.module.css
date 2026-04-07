@@ -6,18 +6,32 @@
   align-items: center;
   justify-content: center;
   padding: 1.25rem;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(12, 18, 28, 0.38);
   backdrop-filter: blur(6px);
 }
 
 .dialog {
   width: min(100%, 420px);
-  padding: 1.15rem;
-  border: 1px solid rgba(128, 146, 173, 0.2);
-  border-radius: 20px;
+  padding: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  border-radius: 24px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(245, 248, 252, 0.92) 100%);
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(238, 244, 250, 0.94) 100%);
+  box-shadow:
+    0 26px 60px rgba(15, 23, 42, 0.18),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.76);
+  position: relative;
+  overflow: hidden;
+}
+
+.dialog::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.62), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(224, 174, 58, 0.1), transparent 28%);
+  pointer-events: none;
 }
 
 .header {
@@ -33,13 +47,16 @@
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: rgba(190, 98, 123, 0.12);
-  border: 1px solid rgba(180, 84, 105, 0.12);
+  background: linear-gradient(145deg, #f1bf52 0%, #cc951b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   flex-shrink: 0;
+  box-shadow:
+    0 10px 20px rgba(192, 142, 25, 0.2),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .icon {
-  color: var(--app-danger);
+  color: #332205;
 }
 
 .copy {
@@ -49,8 +66,8 @@
 .title {
   margin: 0;
   color: var(--app-text);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.08rem;
+  font-weight: 800;
   letter-spacing: -0.02em;
 }
 
@@ -73,9 +90,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 0.72rem 1rem;
-  border-radius: 10px;
+  min-height: 46px;
+  padding: 0.78rem 1rem;
+  border-radius: 16px;
   border: 1px solid var(--btn-light-border);
   font-weight: 600;
   line-height: 1;
