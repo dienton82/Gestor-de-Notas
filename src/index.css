@@ -16,11 +16,11 @@
   --app-shadow-soft: 0 8px 20px rgba(51, 72, 102, 0.1);
   --app-text: #172033;
   --app-text-soft: #5f6f86;
-  --app-primary: #2157d5;
-  --app-primary-strong: #1847b3;
-  --app-primary-soft: #edf3ff;
-  --app-danger: #d64f4f;
-  --app-danger-soft: #fff2f2;
+  --app-primary: #1f2937;
+  --app-primary-strong: #111827;
+  --app-primary-soft: #f3f4f6;
+  --app-danger: #b45469;
+  --app-danger-soft: rgba(190, 98, 123, 0.1);
   --app-radius-sm: 10px;
   --app-radius-md: 16px;
   --app-radius-lg: 22px;

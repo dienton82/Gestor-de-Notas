@@ -26,9 +26,11 @@
 
       <div :class="styles.buttons">
         <button type="submit" :class="styles.submitBtn">
+          <Save :size="16" :class="styles.buttonIcon" />
           {{ isEdit ? 'Actualizar' : 'Guardar' }}
         </button>
         <button type="button" @click="cancel" :class="styles.cancelBtn">
+          <X :size="16" :class="styles.buttonIcon" />
           Cancelar
         </button>
       </div>
@@ -38,6 +40,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { Save, X } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotesStore } from '../stores/notes'
 import apiClient from '../api/client'

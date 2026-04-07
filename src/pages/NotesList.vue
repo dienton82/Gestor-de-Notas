@@ -2,18 +2,27 @@
   <div :class="styles.container">
     <header :class="styles.header">
       <h1 :class="styles.title">Mis Notas</h1>
-      <div>
-        <button :class="[styles.btn, styles.btnDanger]" @click="logout">Cerrar sesión</button>
-        <button :class="[styles.btn, styles.btnNew]" @click="goToNew">+ Nueva Nota</button>
+      <div :class="styles.headerActions">
+        <button :class="[styles.btn, styles.btnSecondary]" @click="logout">
+          <LogOut :size="16" :class="styles.buttonIcon" />
+          Cerrar sesión
+        </button>
+        <button :class="[styles.btn, styles.btnPrimary]" @click="goToNew">
+          <Plus :size="16" :class="styles.buttonIcon" />
+          Nueva Nota
+        </button>
       </div>
     </header>
 
     <div :class="styles.filters">
-      <input
-        v-model="searchTerm"
-        :class="styles.searchInput"
-        placeholder="🔍 Buscar por título o contenido…"
-      />
+      <div :class="styles.searchField">
+        <Search :size="16" :class="styles.searchIcon" />
+        <input
+          v-model="searchTerm"
+          :class="styles.searchInput"
+          placeholder="Buscar por título o contenido"
+        />
+      </div>
       <select v-model="sortKey" :class="styles.select">
         <option value="createdAt">Ordenar por fecha</option>
         <option value="noteCode">Ordenar por código</option>
@@ -40,7 +49,10 @@
 
     <div v-else>
       <div v-for="(group, label) in groupedPaginatedNotes" :key="label" :class="styles.group">
-        <h2 :class="styles.groupTitle">🗓 {{ label }}</h2>
+        <h2 :class="styles.groupTitle">
+          <CalendarDays :size="16" :class="styles.groupIcon" />
+          {{ label }}
+        </h2>
         <ul :class="styles.list">
           <li v-for="nota in group" :key="nota.noteCode" :class="styles.item">
             <div v-if="editingCode === nota.noteCode" :class="styles.inlineEditor">
@@ -48,29 +60,43 @@
                 v-model="editingContent"
                 :class="styles.editTextarea"
                 rows="3"
-                style="width: 191px; height: 51px;"
               ></textarea>
 
               <div :class="styles.inlineButtons">
-                <button :class="[styles.btn, styles.btnPrimary]" @click="saveInline(nota.noteCode)">Guardar</button>
-                <button :class="[styles.btn, styles.btnSecondary]" @click="cancelInline">Cancelar</button>
+                <button :class="[styles.btn, styles.btnPrimary]" @click="saveInline(nota.noteCode)">
+                  <Save :size="16" :class="styles.buttonIcon" />
+                  Guardar
+                </button>
+                <button :class="[styles.btn, styles.btnSecondary]" @click="cancelInline">
+                  <X :size="16" :class="styles.buttonIcon" />
+                  Cancelar
+                </button>
               </div>
             </div>
 
             <div v-else :class="styles.itemContent" @dblclick="startInline(nota)">
               <NoteCard :title="nota.noteCode" :content="nota.contentText" />
               <div :class="styles.meta">
-                <span>📅 {{ formatDate(nota.createdAt) }}</span>
+                <span :class="styles.metaItem">
+                  <CalendarDays :size="16" :class="styles.metaIcon" />
+                  {{ formatDate(nota.createdAt) }}
+                </span>
                 <span v-if="nota.attachments?.length && nota.attachments[0].url">
-                  📌
+                  <Paperclip :size="16" :class="styles.metaIcon" />
                   <a :href="nota.attachments[0].url" target="_blank" rel="noopener noreferrer">
                     {{ nota.attachments[0].name || 'Ver archivo' }}
                   </a>
                 </span>
               </div>
               <div :class="styles.actions">
-                <button :class="styles.linkEdit" @click.stop="editNote(nota.noteCode)">Editar</button>
-                <button :class="styles.linkDelete" @click.stop="confirmAndDelete(nota.noteCode)">Eliminar</button>
+                <button :class="styles.linkEdit" @click.stop="editNote(nota.noteCode)">
+                  <Pencil :size="16" :class="styles.buttonIcon" />
+                  Editar
+                </button>
+                <button :class="styles.linkDelete" @click.stop="confirmAndDelete(nota.noteCode)">
+                  <Trash2 :size="16" :class="styles.buttonIcon" />
+                  Eliminar
+                </button>
               </div>
             </div>
           </li>
@@ -79,15 +105,34 @@
     </div>
 
     <nav v-if="pageCount > 1" :class="styles.pagination">
-      <button :disabled="page === 1" @click="page--">« Anterior</button>
+      <button :disabled="page === 1" @click="page--">
+        <ChevronLeft :size="16" :class="styles.buttonIcon" />
+        Anterior
+      </button>
       <span>Página {{ page }} de {{ pageCount }}</span>
-      <button :disabled="page === pageCount" @click="page++">Siguiente »</button>
+      <button :disabled="page === pageCount" @click="page++">
+        Siguiente
+        <ChevronRight :size="16" :class="styles.buttonIcon" />
+      </button>
     </nav>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+  Paperclip,
+  Pencil,
+  Plus,
+  Save,
+  Search,
+  Trash2,
+  X
+} from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'

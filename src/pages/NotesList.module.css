@@ -25,6 +25,12 @@
   letter-spacing: -0.04em;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -35,9 +41,11 @@
 .btn,
 .linkEdit,
 .linkDelete,
-.btnPrimary,
-.btnSecondary,
 .pagination button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   padding: 0.74rem 1rem;
   border-radius: var(--app-radius-sm);
   border: 1px solid transparent;
@@ -52,23 +60,23 @@
   cursor: pointer;
 }
 
+.buttonIcon {
+  flex-shrink: 0;
+}
+
 .btn:hover,
 .linkEdit:hover,
 .linkDelete:hover,
-.btnPrimary:hover,
-.btnSecondary:hover,
 .pagination button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
 .btn {
-  margin-right: 0.65rem;
   background: rgba(255, 255, 255, 0.84);
   color: var(--app-text);
   border-color: var(--app-border);
 }
 
-.btnDanger,
 .linkDelete,
 .btnSecondary {
   background: var(--app-danger-soft);
@@ -83,25 +91,32 @@
   color: #fff;
 }
 
-.btnNew,
 .linkEdit,
 .btnPrimary,
 .pagination button {
-  background: linear-gradient(180deg, #f6f9ff 0%, #eaf1ff 100%);
-  color: var(--app-primary);
-  border-color: rgba(33, 87, 213, 0.16);
+  background: linear-gradient(180deg, #293445 0%, #1f2937 100%);
+  color: #fff;
+  border-color: rgba(31, 41, 55, 0.16);
 }
 
-.btnNew {
-  margin: 1rem 0;
-}
-
-.btnNew:hover,
 .linkEdit:hover,
 .btnPrimary:hover,
 .pagination button:hover:not(:disabled) {
-  background: linear-gradient(180deg, #2a61db 0%, #1f53c6 100%);
-  color: #fff;
+  background: linear-gradient(180deg, #374151 0%, #273244 100%);
+}
+
+.searchField {
+  position: relative;
+  flex: 1 1 260px;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 0.95rem;
+  transform: translateY(-50%);
+  color: #7a8699;
+  pointer-events: none;
 }
 
 .searchInput,
@@ -119,7 +134,8 @@
 }
 
 .searchInput {
-  flex: 1 1 260px;
+  width: 100%;
+  padding-left: 2.55rem;
 }
 
 .searchInput:focus,
@@ -150,11 +166,18 @@
 }
 
 .groupTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   margin: 0 0 0.8rem;
   color: var(--app-text);
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+.groupIcon {
+  color: #7a8699;
 }
 
 .list {
@@ -191,6 +214,18 @@
   color: var(--app-text-soft);
 }
 
+.metaItem,
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.metaIcon {
+  flex-shrink: 0;
+  color: #7a8699;
+}
+
 .meta a {
   color: var(--app-primary);
   text-decoration: none;
@@ -210,7 +245,7 @@
 }
 
 .editTextarea {
-  width: 100% !important;
+  width: 100%;
   min-height: 88px;
   resize: vertical;
   padding: 0.8rem 0.95rem;
@@ -270,21 +305,25 @@
   }
 
   .header > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    width: 100%;
   }
 
-  .btn {
+  .headerActions {
     width: 100%;
-    margin-right: 0;
-    margin-top: 0;
+    flex-direction: column;
+  }
+
+  .btn,
+  .btnPrimary,
+  .btnSecondary {
+    width: 100%;
   }
 
   .filters {
     flex-direction: column;
   }
 
+  .searchField,
   .searchInput,
   .select {
     width: 100%;

@@ -82,7 +82,10 @@
 
 .submitBtn,
 .cancelBtn {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   width: 100%;
   padding: 0.82rem 1rem;
   border-radius: var(--app-radius-sm);
@@ -98,27 +101,29 @@
 }
 
 .submitBtn {
-  background: linear-gradient(180deg, #f6f9ff 0%, #eaf1ff 100%);
-  color: var(--app-primary);
-  border-color: rgba(33, 87, 213, 0.16);
+  background: linear-gradient(180deg, #293445 0%, #1f2937 100%);
+  color: #fff;
+  border-color: rgba(31, 41, 55, 0.16);
 }
 
 .submitBtn:hover {
   transform: translateY(-1px);
-  background: linear-gradient(180deg, #2a61db 0%, #1f53c6 100%);
-  color: #fff;
+  background: linear-gradient(180deg, #374151 0%, #273244 100%);
 }
 
 .cancelBtn {
-  background: var(--app-danger-soft);
-  color: var(--app-danger);
-  border-color: rgba(214, 79, 79, 0.14);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--app-text);
+  border-color: var(--app-border);
 }
 
 .cancelBtn:hover {
   transform: translateY(-1px);
-  background: #d95858;
-  color: #fff;
+  background: rgba(31, 41, 55, 0.06);
+}
+
+.buttonIcon {
+  flex-shrink: 0;
 }
 
 @media (max-width: 480px) {

@@ -29,6 +29,7 @@
         :disabled="loading"
         :class="[styles.button, loading && styles.buttonDisabled]"
       >
+        <LogIn :size="16" :class="styles.buttonIcon" />
         {{ loading ? 'Ingresando...' : 'Ingresar' }}
       </button>
       <p v-if="error" :class="styles.error">{{ error }}</p>
@@ -38,6 +39,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { LogIn } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import styles from './Login.module.css'
