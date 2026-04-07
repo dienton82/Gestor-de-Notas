@@ -40,14 +40,12 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotesStore } from '../stores/notes'
-import { useAuthStore } from '../stores/auth'
 import apiClient from '../api/client'
 import styles from './NoteForm.module.css'
 
 const route = useRoute()
 const router = useRouter()
 const store = useNotesStore()
-const auth = useAuthStore()
 
 const content = ref('')
 const file = ref(null)
@@ -58,13 +56,6 @@ const isEdit = Boolean(noteCode)
 onMounted(async () => {
   try {
     if (!isEdit) {
-      return
-    }
-
-    if (auth.publicDemoMode) {
-      await store.fetchNotes()
-      const note = store.list.find(item => item.noteCode === noteCode)
-      content.value = note?.contentText || note?.content || ''
       return
     }
 

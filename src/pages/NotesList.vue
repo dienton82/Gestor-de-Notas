@@ -3,16 +3,10 @@
     <header :class="styles.header">
       <h1 :class="styles.title">Mis Notas</h1>
       <div>
-        <button :class="[styles.btn, styles.btnDanger]" @click="logout">
-          {{ auth.publicDemoMode ? 'Salir del modo demo' : 'Cerrar sesión' }}
-        </button>
+        <button :class="[styles.btn, styles.btnDanger]" @click="logout">Cerrar sesión</button>
         <button :class="[styles.btn, styles.btnNew]" @click="goToNew">+ Nueva Nota</button>
       </div>
     </header>
-
-    <p v-if="auth.publicDemoMode" :class="styles.notice">
-      {{ PUBLIC_DEMO_AUTH_MESSAGE }}
-    </p>
 
     <div :class="styles.filters">
       <input
@@ -97,7 +91,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
-import { PUBLIC_DEMO_AUTH_MESSAGE } from '../config/app'
 import NoteCard from '../components/NoteCard.vue'
 import styles from './NotesList.module.css'
 

@@ -14,7 +14,7 @@
 
 ### Características destacadas
 
-- 🔑 Login con token JWT cuando el backend externo permite el origin
+- 🔑 Login funcional para demo pública
 - 📝 CRUD completo de notas
 - ✏️ Edición inline con doble clic
 - 📅 Agrupación visual por fecha (Hoy, Ayer, Esta semana)
@@ -23,7 +23,7 @@
 - 📄 Paginación
 - 🎨 Diseño responsive
 - 🚀 Despliegue automático en GitHub Pages
-- 🧪 Modo demo para revisar la app cuando la API pública falle por CORS
+- 🧪 Backend mock integrado para la demo pública
 
 ---
 
@@ -36,6 +36,7 @@ npm install
 
 # API real en desarrollo local
 echo VITE_API_URL=https://stg.prolibu.com/v2 > .env
+echo VITE_API_MODE=real >> .env
 
 # Opcional: usar proxy local de Vite en desarrollo
 echo VITE_USE_API_PROXY=true >> .env
@@ -54,28 +55,29 @@ Producción pública: `https://dienton82.github.io/Gestor-de-Notas/`
 
 ## 🌍 Entornos
 
-- Desarrollo local: usa la API real configurada en `VITE_API_URL`.
+- Desarrollo local: puede usar la API real configurada en `VITE_API_URL`.
 - Desarrollo local con proxy opcional: puedes ejecutar Vite con `VITE_USE_API_PROXY=true` para consumir la API a través de `/api` y evitar bloqueos del navegador durante desarrollo.
-- Producción pública en GitHub Pages: si el backend externo bloquea el origin por CORS, la app muestra un mensaje claro y permite continuar en modo demo sin romper la interfaz.
+- Producción pública en GitHub Pages: usa un backend mock local integrado, sin depender de CORS del servidor externo.
 
 ### Variables útiles
 
+- `VITE_API_MODE=real` para usar la API real
+- `VITE_API_MODE=mock` para forzar backend mock en cualquier entorno
 - `VITE_API_URL=https://stg.prolibu.com/v2`
 - `VITE_USE_API_PROXY=true`
 - `VITE_API_PROXY_TARGET=https://stg.prolibu.com`
-- `VITE_PUBLIC_DEMO_MODE=false` para desactivar el modo demo en builds de producción si no lo quieres usar
 
 ---
 
-## ⚠️ CORS en GitHub Pages
+## ⚠️ Demo pública sin CORS
 
-La URL pública `https://dienton82.github.io/Gestor-de-Notas/` no controla el servidor `https://stg.prolibu.com/v2`. Si ese backend no permite el origin `https://dienton82.github.io`, el login real fallará por CORS antes de completar la autenticación.
+La URL pública `https://dienton82.github.io/Gestor-de-Notas/` funciona con un backend mock local persistido en `localStorage`, por lo que el login y el CRUD de notas no dependen del servidor externo `https://stg.prolibu.com/v2`.
 
 En ese caso:
 
-- la app no muestra el error técnico crudo;
-- informa claramente la restricción;
-- permite continuar en modo demo para revisar la experiencia sin romper la UI.
+- la demo pública no falla por restricciones CORS;
+- el flujo de autenticación funciona dentro del navegador;
+- las notas creadas o editadas en la demo persisten localmente en el dispositivo del usuario.
 
 ---
 

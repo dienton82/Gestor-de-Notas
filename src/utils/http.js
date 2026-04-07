@@ -1,8 +1,4 @@
 import axios from 'axios'
-import {
-  PUBLIC_DEMO_AUTH_MESSAGE,
-  allowPublicDemoMode
-} from '../config/app'
 
 export function isCorsOrNetworkError(error) {
   return (
@@ -13,25 +9,28 @@ export function isCorsOrNetworkError(error) {
 }
 
 export function normalizeAuthError(error) {
-  if (isCorsOrNetworkError(error)) {
+  if (axios.isAxiosError(error) && error.response?.status === 401) {
     return {
-      code: 'PUBLIC_DEMO_CORS_RESTRICTION',
-      message: PUBLIC_DEMO_AUTH_MESSAGE,
-      canContinueInDemo: allowPublicDemoMode
+      code: 'AUTH_INVALID_CREDENTIALS',
+      message: 'Email o contraseña inválidos',
+      canContinueInDemo: false,
+      isNetworkError: false
     }
   }
 
-  if (axios.isAxiosError(error) && error.response?.status === 401) {
+  if (isCorsOrNetworkError(error)) {
     return {
-      code: 'INVALID_CREDENTIALS',
-      message: 'Email o contraseña inválidos',
-      canContinueInDemo: false
+      code: 'AUTH_NETWORK_ERROR',
+      message: 'No fue posible conectar con el servidor de autenticación.',
+      canContinueInDemo: false,
+      isNetworkError: true
     }
   }
 
   return {
     code: 'AUTH_REQUEST_FAILED',
     message: 'No fue posible iniciar sesion. Intenta de nuevo en unos momentos.',
-    canContinueInDemo: false
+    canContinueInDemo: false,
+    isNetworkError: false
   }
 }

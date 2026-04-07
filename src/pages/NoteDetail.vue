@@ -26,27 +26,16 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import apiClient from '../api/client'
-import { useAuthStore } from '../stores/auth'
-import { useNotesStore } from '../stores/notes'
 
 const route = useRoute()
-const auth = useAuthStore()
-const notesStore = useNotesStore()
 const note = ref(null)
 const loading = ref(true)
 const error = ref('')
 
 onMounted(async () => {
   try {
-    if (auth.publicDemoMode) {
-      await notesStore.fetchNotes()
-      note.value = notesStore.list.find(
-        item => item.noteCode === route.params.noteCode
-      )
-    } else {
-      const { data } = await apiClient.get(`/note/${route.params.noteCode}`)
-      note.value = data
-    }
+    const { data } = await apiClient.get(`/note/${route.params.noteCode}`)
+    note.value = data
 
     if (!note.value) {
       error.value = 'No se encontro la nota solicitada.'

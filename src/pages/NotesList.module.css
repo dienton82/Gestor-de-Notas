@@ -280,18 +280,6 @@
   gap: 1rem;
 }
 
-.notice {
-  margin: 0.5rem 0 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #bfd9ee;
-  background: rgba(238, 249, 255, 0.95);
-  color: #23415a;
-  line-height: 1.4;
-}
-
-
-  
   /* MOBILE */
   @media (max-width: 640px) {
 

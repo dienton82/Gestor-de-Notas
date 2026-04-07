@@ -88,10 +88,6 @@
     text-align: center;
   }
 
-  .secondaryButton {
-    margin-top: 0.75rem;
-  }
-  
   /* MOBILE */
   @media (max-width: 480px) {
     .container {
