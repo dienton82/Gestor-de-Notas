@@ -16,12 +16,22 @@
 
       <div :class="styles.field">
         <label for="file" :class="styles.label">Adjunto</label>
-        <input
-          type="file"
-          id="file"
-          @change="onFileChange"
-          :class="styles.fileInput"
-        />
+        <div :class="styles.fileUpload">
+          <input
+            ref="fileInputRef"
+            type="file"
+            id="file"
+            @change="onFileChange"
+            :class="styles.fileInput"
+          />
+          <button type="button" :class="styles.fileButton" @click="openFilePicker">
+            <Paperclip :size="16" :class="styles.buttonIcon" />
+            Seleccionar archivo
+          </button>
+          <span :class="styles.fileName">
+            {{ selectedFileName || 'Ningún archivo seleccionado' }}
+          </span>
+        </div>
       </div>
 
       <div :class="styles.buttons">
@@ -39,8 +49,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Save, X } from 'lucide-vue-next'
+import { ref, onMounted, computed } from 'vue'
+import { Paperclip, Save, X } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
@@ -55,9 +65,11 @@ const store = useNotesStore()
 
 const content = ref('')
 const file = ref(null)
+const fileInputRef = ref(null)
 const error = ref('')
 const noteCode = route.params.noteCode
 const isEdit = Boolean(noteCode)
+const selectedFileName = computed(() => file.value?.name || '')
 
 onMounted(async () => {
   try {
@@ -80,6 +92,10 @@ onMounted(async () => {
 
 function onFileChange(e) {
   file.value = e.target.files[0]
+}
+
+function openFilePicker() {
+  fileInputRef.value?.click()
 }
 
 async function onSubmit() {

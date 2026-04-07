@@ -23,13 +23,34 @@
           placeholder="Buscar por título o contenido"
         />
       </div>
-      <div :class="styles.selectField">
-        <select v-model="sortKey" :class="styles.select">
-          <option value="createdAt">Ordenar por fecha</option>
-          <option value="noteCode">Ordenar por código</option>
-          <option value="contentText">Ordenar por contenido</option>
-        </select>
-        <ChevronDown :size="16" :class="styles.selectIcon" />
+      <div ref="sortMenuRef" :class="styles.selectField">
+        <button
+          type="button"
+          :class="[styles.selectButton, isSortMenuOpen && styles.selectButtonOpen]"
+          :aria-expanded="isSortMenuOpen"
+          aria-haspopup="listbox"
+          @click="toggleSortMenu"
+        >
+          <span :class="styles.selectButtonLabel">{{ currentSortLabel }}</span>
+          <ChevronDown
+            :size="16"
+            :class="[styles.selectIcon, isSortMenuOpen && styles.selectIconOpen]"
+          />
+        </button>
+        <div v-if="isSortMenuOpen" :class="styles.selectMenu" role="listbox" aria-label="Ordenar notas">
+          <button
+            v-for="option in sortOptions"
+            :key="option.value"
+            type="button"
+            role="option"
+            :aria-selected="sortKey === option.value"
+            :class="[styles.selectOption, sortKey === option.value && styles.selectOptionActive]"
+            @click="selectSortOption(option.value)"
+          >
+            <span>{{ option.label }}</span>
+            <Check v-if="sortKey === option.value" :size="16" :class="styles.optionCheck" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -126,9 +147,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import {
   CalendarDays,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -155,6 +177,22 @@ const notesStore = useNotesStore()
 
 const loading = ref(true)
 const loadError = ref('')
+const searchTerm = ref('')
+const sortKey = ref('createdAt')
+const page = ref(1)
+const pageSize = ref(5)
+const isSortMenuOpen = ref(false)
+const sortMenuRef = ref(null)
+
+const sortOptions = [
+  { value: 'createdAt', label: 'Ordenar por fecha' },
+  { value: 'noteCode', label: 'Ordenar por código' },
+  { value: 'contentText', label: 'Ordenar por contenido' }
+]
+
+const currentSortLabel = computed(() =>
+  sortOptions.find(option => option.value === sortKey.value)?.label || 'Ordenar por fecha'
+)
 
 onMounted(async () => {
   try {
@@ -164,12 +202,13 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+
+  document.addEventListener('pointerdown', handlePointerDown)
 })
 
-const searchTerm = ref('')
-const sortKey = ref('createdAt')
-const page = ref(1)
-const pageSize = ref(5)
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', handlePointerDown)
+})
 
 const filteredNotes = computed(() => {
   const term = searchTerm.value.toLowerCase().trim()
@@ -231,6 +270,22 @@ function logout() {
 
 function goToNew() {
   router.push('/notes/new')
+}
+
+function toggleSortMenu() {
+  isSortMenuOpen.value = !isSortMenuOpen.value
+}
+
+function selectSortOption(value) {
+  sortKey.value = value
+  page.value = 1
+  isSortMenuOpen.value = false
+}
+
+function handlePointerDown(event) {
+  if (!sortMenuRef.value?.contains(event.target)) {
+    isSortMenuOpen.value = false
+  }
 }
 
 function editNote(code) {
