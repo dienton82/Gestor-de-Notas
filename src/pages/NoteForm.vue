@@ -1,7 +1,8 @@
 <template>
   <div :class="styles.formContainer">
     <h1 :class="styles.heading">{{ isEdit ? 'Editar Nota' : 'Nueva Nota' }}</h1>
-    <form @submit.prevent="onSubmit">
+    <p v-if="error" :class="styles.error">{{ error }}</p>
+    <form @submit.prevent="onSubmit" :class="styles.form">
       <div :class="styles.field">
         <label for="content" :class="styles.label">Contenido</label>
         <textarea
@@ -15,12 +16,22 @@
 
       <div :class="styles.field">
         <label for="file" :class="styles.label">Adjunto</label>
-        <input type="file" id="file" @change="onFileChange" :class="styles.fileInput" />
+        <input
+          type="file"
+          id="file"
+          @change="onFileChange"
+          :class="styles.fileInput"
+        />
       </div>
 
-      <button type="submit" :class="styles.button">
-        {{ isEdit ? 'Actualizar' : 'Guardar' }}
-      </button>
+      <div :class="styles.buttons">
+        <button type="submit" :class="styles.submitBtn">
+          {{ isEdit ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button type="button" @click="cancel" :class="styles.cancelBtn">
+          Cancelar
+        </button>
+      </div>
     </form>
   </div>
 </template>
@@ -28,23 +39,39 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import apiClient from '../api/client'
 import { useNotesStore } from '../stores/notes'
+import { useAuthStore } from '../stores/auth'
+import apiClient from '../api/client'
 import styles from './NoteForm.module.css'
 
 const route = useRoute()
 const router = useRouter()
 const store = useNotesStore()
+const auth = useAuthStore()
 
 const content = ref('')
 const file = ref(null)
+const error = ref('')
 const noteCode = route.params.noteCode
 const isEdit = Boolean(noteCode)
 
 onMounted(async () => {
-  if (isEdit) {
+  try {
+    if (!isEdit) {
+      return
+    }
+
+    if (auth.publicDemoMode) {
+      await store.fetchNotes()
+      const note = store.list.find(item => item.noteCode === noteCode)
+      content.value = note?.contentText || note?.content || ''
+      return
+    }
+
     const { data } = await apiClient.get(`/note/${noteCode}`)
     content.value = data.contentText || data.content || ''
+  } catch {
+    error.value = 'No fue posible cargar la nota.'
   }
 })
 
@@ -53,11 +80,22 @@ function onFileChange(e) {
 }
 
 async function onSubmit() {
-  if (isEdit) {
-    await store.updateNote(noteCode, { content: content.value, file: file.value })
-  } else {
-    await store.createNote({ content: content.value, file: file.value })
+  error.value = ''
+
+  try {
+    if (isEdit) {
+      await store.updateNote(noteCode, { content: content.value, file: file.value })
+    } else {
+      await store.createNote({ content: content.value, file: file.value })
+    }
+
+    router.push('/')
+  } catch {
+    error.value = 'No fue posible guardar la nota.'
   }
+}
+
+function cancel() {
   router.push('/')
 }
 </script>

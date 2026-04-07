@@ -1,12 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-
-// Importa con el mismo casing que el nombre de archivo
-import Login from '../pages/login.vue'
+import Login from '../pages/Login.vue'
 import NotesList from '../pages/NotesList.vue'
 import NoteForm from '../pages/NoteForm.vue'
 import NoteDetail from '../pages/NoteDetail.vue'
-import '..//index.css';
+import '../index.css'
 
 const routes = [
   { path: '/login', component: Login },
@@ -17,21 +15,22 @@ const routes = [
   { path: '/:pathMatch(.*)*', redirect: '/login' }
 ]
 
-
-
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 })
 
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore()
-  if (to.meta.requiresAuth && !auth.isLoggedIn) {
+
+  if (to.meta.requiresAuth && !auth.canAccessProtectedRoutes) {
     return next('/login')
   }
-  if (to.path === '/login' && auth.isLoggedIn) {
+
+  if (to.path === '/login' && auth.canAccessProtectedRoutes) {
     return next('/')
   }
+
   next()
 })
 

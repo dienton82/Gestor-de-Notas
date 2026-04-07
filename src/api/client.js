@@ -1,8 +1,9 @@
 // src/api/client.js
 import axios from 'axios'
+import { API_URL } from '../config/app'
 
 const apiClient = axios.create({
-  baseURL: 'https://stg.prolibu.com/v2',
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -17,6 +18,8 @@ apiClient.interceptors.request.use(config => {
   const token = localStorage.getItem('jwt')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
+  } else if (config.headers?.Authorization) {
+    delete config.headers.Authorization
   }
   return config
 })

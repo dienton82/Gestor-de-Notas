@@ -12,9 +12,9 @@
 
 **Gestor de Notas** es una SPA construida con Vue 3 y Pinia que permite a los usuarios autenticarse, gestionar notas personales y organizarlas de forma efectiva.
 
-### Características destacadas:
+### Características destacadas
 
-- 🔑 Login real con token JWT
+- 🔑 Login con token JWT cuando el backend externo permite el origin
 - 📝 CRUD completo de notas
 - ✏️ Edición inline con doble clic
 - 📅 Agrupación visual por fecha (Hoy, Ayer, Esta semana)
@@ -23,33 +23,59 @@
 - 📄 Paginación
 - 🎨 Diseño responsive
 - 🚀 Despliegue automático en GitHub Pages
+- 🧪 Modo demo para revisar la app cuando la API pública falle por CORS
 
 ---
 
 ## ⚙️ Instalación y ejecución
 
 ```bash
-# 1. Clonar el repositorio
 git clone https://github.com/dienton82/Gestor-de-Notas.git
 cd Gestor-de-Notas
-
-# 2. Instalar dependencias
 npm install
 
-# 3. (Opcional) Crear archivo de entorno
+# API real en desarrollo local
 echo VITE_API_URL=https://stg.prolibu.com/v2 > .env
 
-# 4. Ejecutar en modo desarrollo
+# Opcional: usar proxy local de Vite en desarrollo
+echo VITE_USE_API_PROXY=true >> .env
+echo VITE_API_PROXY_TARGET=https://stg.prolibu.com >> .env
+
 npm run dev
 # Abre: http://localhost:5173
 
-# 5. Generar build de producción
 npm run build
-
-# 6. Desplegar en GitHub Pages
 npm run deploy
-# Producción: https://dienton82.github.io/Gestor-de-Notas/
 ```
+
+Producción pública: `https://dienton82.github.io/Gestor-de-Notas/`
+
+---
+
+## 🌍 Entornos
+
+- Desarrollo local: usa la API real configurada en `VITE_API_URL`.
+- Desarrollo local con proxy opcional: puedes ejecutar Vite con `VITE_USE_API_PROXY=true` para consumir la API a través de `/api` y evitar bloqueos del navegador durante desarrollo.
+- Producción pública en GitHub Pages: si el backend externo bloquea el origin por CORS, la app muestra un mensaje claro y permite continuar en modo demo sin romper la interfaz.
+
+### Variables útiles
+
+- `VITE_API_URL=https://stg.prolibu.com/v2`
+- `VITE_USE_API_PROXY=true`
+- `VITE_API_PROXY_TARGET=https://stg.prolibu.com`
+- `VITE_PUBLIC_DEMO_MODE=false` para desactivar el modo demo en builds de producción si no lo quieres usar
+
+---
+
+## ⚠️ CORS en GitHub Pages
+
+La URL pública `https://dienton82.github.io/Gestor-de-Notas/` no controla el servidor `https://stg.prolibu.com/v2`. Si ese backend no permite el origin `https://dienton82.github.io`, el login real fallará por CORS antes de completar la autenticación.
+
+En ese caso:
+
+- la app no muestra el error técnico crudo;
+- informa claramente la restricción;
+- permite continuar en modo demo para revisar la experiencia sin romper la UI.
 
 ---
 
@@ -57,34 +83,32 @@ npm run deploy
 
 ```plaintext
 Gestor-de-Notas/
-├── public/                # Archivos estáticos (index.html, favicon...)
+├── public/
 ├── src/
-│   ├── api/               # Cliente Axios
-│   ├── assets/            # Imágenes y estilos globales
-│   ├── components/        # Componentes reutilizables
-│   ├── pages/             # Vistas (Login, NotesList, NoteForm)
-│   ├── router/            # Configuración de Vue Router
-│   ├── stores/            # Stores de Pinia (auth, notes)
-│   ├── index.css          # Estilos globales
-│   └── main.js            # Entry point
-├── .gitignore
-├── tailwind.config.js
-├── postcss.config.cjs
-├── vite.config.js
+│   ├── api/
+│   ├── components/
+│   ├── config/
+│   ├── mocks/
+│   ├── pages/
+│   ├── router/
+│   ├── stores/
+│   ├── utils/
+│   └── main.js
 ├── package.json
-└── README.md
+├── README.md
+└── vite.config.js
 ```
 
 ---
 
 ## 📡 Endpoints utilizados
 
-- `POST /auth/signin` — Iniciar sesión (JWT)
-- `GET /note/` — Listar notas
-- `POST /note/` — Crear nueva nota
-- `GET /note/{noteCode}` — Obtener detalle
-- `PATCH /note/{noteCode}` — Editar nota
-- `DELETE /note/{noteCode}` — Eliminar nota
+- `POST /auth/signin`
+- `GET /note/`
+- `POST /note/`
+- `GET /note/{noteCode}`
+- `PATCH /note/{noteCode}`
+- `DELETE /note/{noteCode}`
 
 ---
 
@@ -97,25 +121,7 @@ Password: Prolibu2025!
 
 ---
 
-## ✅ Funcionalidades implementadas
-
-| Funcionalidad                            | Estado |
-|-----------------------------------------|--------|
-| Login con token JWT                     | ✅     |
-| CRUD completo de notas                  | ✅     |
-| Edición inline con doble clic           | ✅     |
-| Agrupación por fecha (Hoy, Ayer, etc.)  | ✅     |
-| Ordenamiento por campos clave           | ✅     |
-| Filtro de búsqueda                      | ✅     |
-| Paginación                              | ✅     |
-| Diseño responsive                       | ✅     |
-| Spinner de carga                        | ✅     |
-| Estilos con CSS Modules                 | ✅     |
-| Despliegue en GitHub Pages              | ✅     |
-
----
-
-## 📷 Capturas
+## 📷 Captura
 
 ![Pantalla principal](public/gestorNotas.webp)
 
@@ -125,13 +131,3 @@ Password: Prolibu2025!
 
 Este proyecto está bajo la licencia MIT.  
 © 2025 [dienton82](https://github.com/dienton82)
-
----
-
-> ✨ Gracias por visitar el proyecto.  
-> Si tienes sugerencias o mejoras, abre un *issue* en GitHub.
-
----
-
-> ¡Gracias por probar el Gestor de Notas!
-> Para dudas o sugerencias, abre un *issue* en el repositorio.
