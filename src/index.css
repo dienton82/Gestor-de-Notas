@@ -25,44 +25,35 @@
   --btn-light-text: #223046;
   --btn-light-border: rgba(255, 255, 255, 0.72);
   --btn-light-shadow:
-    -4px -4px 8px rgba(255, 255, 255, 0.78),
-    6px 6px 12px rgba(164, 180, 200, 0.2),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.52);
+    0 4px 10px rgba(150, 166, 186, 0.12),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.45);
   --btn-light-shadow-hover:
-    -5px -5px 10px rgba(255, 255, 255, 0.82),
-    8px 8px 14px rgba(157, 173, 194, 0.24),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.6);
+    0 6px 12px rgba(150, 166, 186, 0.16),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.52);
   --btn-light-shadow-pressed:
-    inset 3px 3px 7px rgba(167, 182, 202, 0.22),
-    inset -3px -3px 7px rgba(255, 255, 255, 0.78);
+    inset 2px 2px 6px rgba(167, 182, 202, 0.18);
   --btn-dark-bg: linear-gradient(145deg, #29405f 0%, #16263e 100%);
   --btn-dark-text: #f8fbff;
   --btn-dark-border: rgba(173, 206, 255, 0.18);
   --btn-dark-shadow:
-    0 8px 16px rgba(13, 27, 50, 0.18),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.14),
-    inset -1px -1px 0 rgba(6, 15, 28, 0.18);
+    0 6px 14px rgba(13, 27, 50, 0.16),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.1);
   --btn-dark-shadow-hover:
-    0 10px 18px rgba(12, 26, 48, 0.22),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.16),
-    inset -1px -1px 0 rgba(6, 15, 28, 0.2);
+    0 8px 16px rgba(12, 26, 48, 0.2),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.12);
   --btn-dark-shadow-pressed:
-    inset 4px 4px 9px rgba(11, 23, 42, 0.26),
-    inset -2px -2px 7px rgba(78, 108, 150, 0.12);
+    inset 3px 3px 8px rgba(11, 23, 42, 0.22);
   --btn-danger-bg: linear-gradient(145deg, #eef3f8 0%, #dce5ef 100%);
   --btn-danger-text: #415167;
   --btn-danger-border: rgba(255, 255, 255, 0.74);
   --btn-danger-shadow:
-    -7px -7px 14px rgba(255, 255, 255, 0.88),
-    10px 10px 20px rgba(150, 166, 186, 0.34),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.68);
+    0 4px 10px rgba(150, 166, 186, 0.12),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.48);
   --btn-danger-shadow-hover:
-    -8px -8px 16px rgba(255, 255, 255, 0.92),
-    12px 12px 22px rgba(140, 156, 177, 0.4),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.76);
+    0 6px 12px rgba(140, 156, 177, 0.16),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.56);
   --btn-danger-shadow-pressed:
-    inset 4px 4px 10px rgba(157, 173, 194, 0.3),
-    inset -4px -4px 10px rgba(255, 255, 255, 0.88);
+    inset 2px 2px 6px rgba(157, 173, 194, 0.18);
   --app-radius-sm: 10px;
   --app-radius-md: 16px;
   --app-radius-lg: 22px;
