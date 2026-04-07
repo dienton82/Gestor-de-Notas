@@ -1,50 +1,71 @@
 /* NoteCard.module.css */
 .card {
-    background: #e0dede!important;
-    padding: 1rem;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    border: 0.1px solid rgba(0, 0, 0, 09);
-    cursor: pointer;
-    width: 62%;
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 1.1rem 1.15rem;
+  border-radius: var(--app-radius-md);
+  border: 1px solid var(--app-border);
+  background: var(--app-surface-strong);
+  box-shadow: var(--app-shadow-soft);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(33, 87, 213, 0.2);
+  box-shadow: 0 16px 32px rgba(33, 55, 88, 0.14);
+}
+
+.title {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--app-text);
+}
+
+.content {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--app-text-soft);
+  line-height: 1.55;
+}
+
+.attachList {
+  list-style: none;
+  padding: 0;
+  margin: 0.85rem 0 0;
+}
+
+.attachList li + li {
+  margin-top: 0.35rem;
+}
+
+.attachLink {
+  color: var(--app-primary);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.attachLink:hover {
+  color: var(--app-primary-strong);
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 100%;
+    padding: 0.95rem;
   }
-  
-  .card:hover {
-    background: #ffffff!important;
-    transform: translateY(-2px);
-  }
-  
+
   .title {
-    margin: 0 0 0.5rem;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #111827;
+    font-size: 0.95rem;
   }
-  
+
   .content {
-    margin: 0;
-    font-size: 0.875rem;
-    color: #121314;
-    line-height: 1.4;
+    font-size: 0.84rem;
   }
-
-  
-  
-  /* Responsive adjustments */
-  @media (max-width: 480px) {
-    .card {
-      padding: 0.75rem;
-      align-items: normal;
-      width: 90%;
-    }
-    .title {
-      font-size: 1rem;
-    }
-    .content {
-      font-size: 0.8rem;
-    }
-
-  
- 
-  }
-  
+}
