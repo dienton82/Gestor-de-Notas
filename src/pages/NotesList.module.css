@@ -2,23 +2,11 @@
   margin: 72px auto 0;
   width: min(96%, 1040px);
   padding: 1.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  border: 1px solid var(--app-border);
   border-radius: 30px;
   background: var(--app-surface);
   box-shadow: var(--app-shadow);
   backdrop-filter: blur(14px);
-  position: relative;
-  overflow: hidden;
-}
-
-.container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top right, rgba(224, 174, 58, 0.12), transparent 24%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.58), transparent 26%);
-  pointer-events: none;
 }
 
 .header {
@@ -35,15 +23,12 @@
   font-size: clamp(1.8rem, 2vw, 2.25rem);
   font-weight: 800;
   letter-spacing: -0.04em;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .headerActions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  position: relative;
-  z-index: 1;
 }
 
 .filters {
@@ -51,8 +36,6 @@
   flex-wrap: wrap;
   gap: 0.85rem;
   margin-bottom: 1.4rem;
-  position: relative;
-  z-index: 1;
 }
 
 .btn,
@@ -130,31 +113,6 @@
 .btnPrimary,
 .linkEdit {
   position: relative;
-  overflow: hidden;
-}
-
-.btnPrimary::before,
-.linkEdit::before {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 36%);
-  pointer-events: none;
-}
-
-.btnPrimary::after,
-.linkEdit::after {
-  content: '';
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  width: 24px;
-  height: 10px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(224, 174, 58, 0.4) 0%, rgba(224, 174, 58, 0) 100%);
-  opacity: 0.9;
-  pointer-events: none;
 }
 
 .linkEdit:hover,
@@ -207,16 +165,14 @@
   min-height: 50px;
   padding: 0.82rem 0.98rem;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  background: var(--app-surface-panel);
+  border: 1px solid var(--app-border-strong);
+  background: rgba(250, 250, 248, 0.98);
   color: var(--app-text);
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
     background-color 180ms ease;
-  box-shadow:
-    0 10px 22px rgba(73, 92, 118, 0.08),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.78);
+  box-shadow: 0 1px 2px rgba(23, 23, 23, 0.04);
 }
 
 .searchInput {
@@ -231,19 +187,17 @@
   width: 100%;
   padding-right: 2.7rem;
   position: relative;
-  border-color: rgba(243, 200, 101, 0.22);
-  background: linear-gradient(145deg, #27405f 0%, #16273f 62%, #112033 100%);
+  border-color: rgba(227, 179, 65, 0.2);
+  background: linear-gradient(180deg, #2b2f34 0%, #1d2024 100%);
   color: #f8fafc;
   font-weight: 600;
-  box-shadow:
-    0 12px 24px rgba(13, 26, 48, 0.18),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--btn-dark-shadow);
   cursor: pointer;
 }
 
 .selectButton:hover {
-  background: linear-gradient(145deg, #304a6c 0%, #1c2e49 62%, #142439 100%);
-  border-color: rgba(243, 200, 101, 0.26);
+  background: linear-gradient(180deg, #33373d 0%, #23262b 100%);
+  border-color: rgba(227, 179, 65, 0.24);
 }
 
 .searchInput:focus,
@@ -260,13 +214,13 @@
   border-color: rgba(224, 174, 58, 0.28);
   box-shadow:
     0 0 0 4px rgba(224, 174, 58, 0.14),
-    0 14px 24px rgba(13, 26, 48, 0.18);
+    var(--btn-dark-shadow);
 }
 
 .selectButton:focus-visible,
 .selectButtonOpen,
 .selectButtonOpen:hover {
-  background: linear-gradient(145deg, #304a6c 0%, #1c2e49 62%, #142439 100%);
+  background: linear-gradient(180deg, #33373d 0%, #23262b 100%);
 }
 
 .selectButtonLabel {
@@ -296,10 +250,10 @@
   right: 0;
   z-index: 20;
   padding: 0.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.64);
+  border: 1px solid var(--app-border);
   border-radius: 18px;
-  background: rgba(248, 251, 255, 0.98);
-  box-shadow: 0 22px 38px rgba(28, 40, 58, 0.14);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 32px rgba(23, 23, 23, 0.08);
   backdrop-filter: blur(12px);
 }
 
@@ -378,12 +332,9 @@
 .item {
   padding: 1.15rem;
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.56) 0%, rgba(238, 244, 250, 0.5) 100%);
-  box-shadow:
-    0 18px 34px rgba(53, 73, 102, 0.09),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--app-border);
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: var(--app-shadow-soft);
 }
 
 .item + .item {
@@ -444,12 +395,10 @@
   resize: vertical;
   padding: 0.92rem 1rem;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  background: var(--app-surface-panel);
+  border: 1px solid var(--app-border-strong);
+  background: rgba(250, 250, 248, 0.98);
   color: var(--app-text);
-  box-shadow:
-    0 10px 22px rgba(73, 92, 118, 0.08),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.78);
+  box-shadow: 0 1px 2px rgba(23, 23, 23, 0.04);
 }
 
 .inlineButtons {

@@ -3,28 +3,14 @@
   margin: 84px auto 0;
   max-width: 460px;
   padding: 2.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.52);
+  border: 1px solid var(--app-border);
   border-radius: 28px;
   box-shadow: var(--app-shadow);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(236, 243, 250, 0.76) 100%);
+  background: rgba(255, 255, 255, 0.84);
   backdrop-filter: blur(14px);
-  position: relative;
-  overflow: hidden;
-}
-
-.container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(224, 174, 58, 0.12), transparent 30%);
-  pointer-events: none;
 }
 
 .hero {
-  position: relative;
   margin-bottom: 1.55rem;
   text-align: center;
 }
@@ -35,7 +21,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #7c6a39;
+  color: var(--app-accent-strong);
 }
 
 .heading {
@@ -45,7 +31,6 @@
   font-weight: 800;
   letter-spacing: -0.05em;
   color: var(--app-text);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .subheading {
@@ -62,13 +47,10 @@
   align-items: flex-start;
   margin-bottom: 1.35rem;
   padding: 1rem 1.05rem;
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(227, 179, 65, 0.18);
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 250, 235, 0.78) 0%, rgba(245, 248, 253, 0.95) 100%);
-  box-shadow:
-    0 14px 28px rgba(55, 74, 100, 0.08),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.72);
+  background: rgba(255, 250, 235, 0.7);
+  box-shadow: 0 10px 22px rgba(23, 23, 23, 0.04);
 }
 
 .noticeIconWrap {
@@ -78,15 +60,12 @@
   width: 34px;
   height: 34px;
   border-radius: 12px;
-  background: linear-gradient(145deg, #f1bf52 0%, #cc951b 100%);
-  box-shadow:
-    0 10px 20px rgba(192, 142, 25, 0.22),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.3);
+  background: rgba(227, 179, 65, 0.18);
   flex-shrink: 0;
 }
 
 .noticeIcon {
-  color: #362505;
+  color: var(--app-accent-strong);
 }
 
 .noticeBody {
@@ -124,21 +103,19 @@
   font-size: 0.88rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: #2e4056;
+  color: #34343a;
 }
 
 .input {
   width: 100%;
   min-height: 52px;
   padding: 0.95rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--app-border-strong);
   border-radius: 16px;
   font-size: 0.96rem;
   color: var(--app-text);
-  background: var(--app-surface-panel);
-  box-shadow:
-    0 10px 22px rgba(63, 83, 109, 0.08),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.8);
+  background: rgba(250, 250, 248, 0.98);
+  box-shadow: 0 1px 2px rgba(23, 23, 23, 0.04);
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -155,9 +132,9 @@
   border-color: rgba(224, 174, 58, 0.34);
   box-shadow:
     0 0 0 4px rgba(224, 174, 58, 0.16),
-    0 14px 24px rgba(63, 83, 109, 0.1);
+    0 8px 18px rgba(23, 23, 23, 0.06);
   background: #fff;
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .button {
@@ -198,7 +175,7 @@
   outline: none;
   box-shadow:
     0 0 0 4px rgba(224, 174, 58, 0.2),
-    var(--btn-dark-shadow-hover);
+    var(--btn-dark-shadow);
 }
 
 .buttonDisabled {
