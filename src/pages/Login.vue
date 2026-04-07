@@ -15,8 +15,8 @@
       <div :class="styles.noticeBody">
         <p :class="styles.noticeTitle">Demo pública disponible</p>
         <p :class="styles.noticeText">
-          Esta demo pública puede usar modo demostración si la API externa no está disponible.
-          Puedes continuar con cualquier correo y contraseña.
+          Esta demo incluye credenciales precargadas para facilitar el acceso. Si la API externa
+          no está disponible, la aplicación puede continuar en modo demostración.
         </p>
       </div>
     </div>
@@ -64,8 +64,8 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import styles from './Login.module.css'
 
-const email = ref('')
-const password = ref('')
+const email = ref('test.user4@prolibu.com')
+const password = ref('Prolibu2025!')
 const loading = ref(false)
 const error = ref('')
 

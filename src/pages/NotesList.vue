@@ -144,6 +144,13 @@
       </button>
     </nav>
   </div>
+  <ConfirmDialog
+    :open="isDeleteDialogOpen"
+    title="Eliminar nota"
+    message="Esta nota se eliminará de forma permanente. Puedes cancelar si todavía quieres conservarla."
+    @cancel="closeDeleteDialog"
+    @confirm="deleteSelectedNote"
+  />
 </template>
 
 <script setup>
@@ -166,6 +173,7 @@ import {
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 import NoteCard from '../components/NoteCard.vue'
 import { normalizeNotesError } from '../utils/http'
 import { sanitizeExternalUrl } from '../utils/security'
@@ -183,6 +191,8 @@ const page = ref(1)
 const pageSize = ref(5)
 const isSortMenuOpen = ref(false)
 const sortMenuRef = ref(null)
+const isDeleteDialogOpen = ref(false)
+const noteCodeToDelete = ref(null)
 
 const sortOptions = [
   { value: 'createdAt', label: 'Ordenar por fecha' },
@@ -293,12 +303,27 @@ function editNote(code) {
 }
 
 async function confirmAndDelete(code) {
-  if (confirm('¿Estás seguro de eliminar esta nota?')) {
-    try {
-      await notesStore.deleteNote(code)
-    } catch (err) {
-      handleNotesError(err)
-    }
+  noteCodeToDelete.value = code
+  isDeleteDialogOpen.value = true
+}
+
+function closeDeleteDialog() {
+  isDeleteDialogOpen.value = false
+  noteCodeToDelete.value = null
+}
+
+async function deleteSelectedNote() {
+  if (!noteCodeToDelete.value) {
+    closeDeleteDialog()
+    return
+  }
+
+  try {
+    await notesStore.deleteNote(noteCodeToDelete.value)
+    closeDeleteDialog()
+  } catch (err) {
+    closeDeleteDialog()
+    handleNotesError(err)
   }
 }
 
