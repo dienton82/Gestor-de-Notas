@@ -110,6 +110,11 @@
   flex: 1 1 260px;
 }
 
+.selectField {
+  position: relative;
+  min-width: 220px;
+}
+
 .searchIcon {
   position: absolute;
   top: 50%;
@@ -138,6 +143,26 @@
   padding-left: 2.55rem;
 }
 
+.select {
+  width: 100%;
+  padding-right: 2.7rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-color: rgba(31, 41, 55, 0.16);
+  background:
+    linear-gradient(180deg, #f6f9ff 0%, #eaf1ff 100%);
+  color: var(--app-primary);
+  font-weight: 600;
+  box-shadow: var(--app-shadow-soft);
+  cursor: pointer;
+}
+
+.select:hover {
+  background: linear-gradient(180deg, #eef3ff 0%, #e4ebfb 100%);
+  border-color: rgba(31, 41, 55, 0.22);
+}
+
 .searchInput:focus,
 .select:focus,
 .editTextarea:focus {
@@ -145,6 +170,22 @@
   border-color: rgba(33, 87, 213, 0.45);
   box-shadow: 0 0 0 4px rgba(33, 87, 213, 0.12);
   background: #fff;
+}
+
+.select:focus {
+  border-color: rgba(31, 41, 55, 0.28);
+  box-shadow:
+    0 0 0 4px rgba(31, 41, 55, 0.1),
+    var(--app-shadow-soft);
+}
+
+.selectIcon {
+  position: absolute;
+  top: 50%;
+  right: 0.95rem;
+  transform: translateY(-50%);
+  color: rgba(31, 41, 55, 0.72);
+  pointer-events: none;
 }
 
 .spinner {
@@ -325,6 +366,7 @@
 
   .searchField,
   .searchInput,
+  .selectField,
   .select {
     width: 100%;
   }

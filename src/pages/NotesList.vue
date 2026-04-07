@@ -23,11 +23,14 @@
           placeholder="Buscar por título o contenido"
         />
       </div>
-      <select v-model="sortKey" :class="styles.select">
-        <option value="createdAt">Ordenar por fecha</option>
-        <option value="noteCode">Ordenar por código</option>
-        <option value="contentText">Ordenar por contenido</option>
-      </select>
+      <div :class="styles.selectField">
+        <select v-model="sortKey" :class="styles.select">
+          <option value="createdAt">Ordenar por fecha</option>
+          <option value="noteCode">Ordenar por código</option>
+          <option value="contentText">Ordenar por contenido</option>
+        </select>
+        <ChevronDown :size="16" :class="styles.selectIcon" />
+      </div>
     </div>
 
     <div v-if="loading" :class="styles.spinner">
@@ -126,6 +129,7 @@
 import { ref, computed, onMounted } from 'vue'
 import {
   CalendarDays,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   LogOut,
