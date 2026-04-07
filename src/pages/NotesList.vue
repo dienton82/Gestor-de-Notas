@@ -103,6 +103,7 @@
                 :title="nota.noteCode"
                 :content="nota.contentText"
                 :attachments="nota.attachments || []"
+                :show-inline-hint="true"
               />
               <div :class="styles.meta">
                 <span :class="styles.metaItem">

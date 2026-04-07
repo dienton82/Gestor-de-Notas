@@ -1,5 +1,9 @@
 <template>
   <div :class="styles.card">
+    <div v-if="showInlineHint" :class="styles.inlineHint">
+      <PencilLine :size="14" :class="styles.inlineHintIcon" />
+      <span>Haz doble clic para editar</span>
+    </div>
     <h3 :class="styles.title">{{ title }}</h3>
     <p :class="styles.content">{{ excerpt }}</p>
 
@@ -19,7 +23,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Paperclip } from 'lucide-vue-next'
+import { Paperclip, PencilLine } from 'lucide-vue-next'
 import { sanitizeExternalUrl } from '../utils/security'
 import styles from './NoteCard.module.css'
 
@@ -29,6 +33,10 @@ const props = defineProps({
   attachments: {
     type: Array,
     default: () => []
+  },
+  showInlineHint: {
+    type: Boolean,
+    default: false
   }
 })
 

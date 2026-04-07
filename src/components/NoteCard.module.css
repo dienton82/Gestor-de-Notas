@@ -1,5 +1,6 @@
 /* NoteCard.module.css */
 .card {
+  position: relative;
   flex: 1 1 260px;
   min-width: 0;
   padding: 1.1rem 1.15rem;
@@ -18,6 +19,27 @@
   transform: translateY(-2px);
   border-color: rgba(33, 87, 213, 0.2);
   box-shadow: 0 16px 32px rgba(33, 55, 88, 0.14);
+}
+
+.inlineHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  padding: 0.36rem 0.6rem;
+  border: 1px solid rgba(31, 41, 55, 0.08);
+  border-radius: 999px;
+  background: rgba(31, 41, 55, 0.05);
+  color: #617188;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.inlineHintIcon {
+  flex-shrink: 0;
+  color: #516076;
 }
 
 .title {
@@ -63,6 +85,11 @@
 
   .title {
     font-size: 0.95rem;
+  }
+
+  .inlineHint {
+    margin-bottom: 0.65rem;
+    font-size: 0.72rem;
   }
 
   .content {
