@@ -35,6 +35,7 @@ export const useAuthStore = defineStore('auth', {
       this.token = ''
 
       localStorage.removeItem('jwt')
+      localStorage.removeItem('mock-user-email')
       delete apiClient.defaults.headers.common.Authorization
     }
   }

@@ -75,15 +75,19 @@
             </div>
 
             <div v-else :class="styles.itemContent" @dblclick="startInline(nota)">
-              <NoteCard :title="nota.noteCode" :content="nota.contentText" />
+              <NoteCard
+                :title="nota.noteCode"
+                :content="nota.contentText"
+                :attachments="nota.attachments || []"
+              />
               <div :class="styles.meta">
                 <span :class="styles.metaItem">
                   <CalendarDays :size="16" :class="styles.metaIcon" />
                   {{ formatDate(nota.createdAt) }}
                 </span>
-                <span v-if="nota.attachments?.length && nota.attachments[0].url">
+                <span v-if="nota.attachments?.length && safeAttachmentUrl(nota.attachments[0].url)">
                   <Paperclip :size="16" :class="styles.metaIcon" />
-                  <a :href="nota.attachments[0].url" target="_blank" rel="noopener noreferrer">
+                  <a :href="safeAttachmentUrl(nota.attachments[0].url)" target="_blank" rel="noopener noreferrer">
                     {{ nota.attachments[0].name || 'Ver archivo' }}
                   </a>
                 </span>
@@ -137,6 +141,8 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
 import NoteCard from '../components/NoteCard.vue'
+import { normalizeNotesError } from '../utils/http'
+import { sanitizeExternalUrl } from '../utils/security'
 import styles from './NotesList.module.css'
 
 const router = useRouter()
@@ -149,8 +155,8 @@ const loadError = ref('')
 onMounted(async () => {
   try {
     await notesStore.fetchNotes()
-  } catch {
-    loadError.value = 'No fue posible cargar las notas desde el servidor.'
+  } catch (err) {
+    handleNotesError(err)
   } finally {
     loading.value = false
   }
@@ -229,7 +235,11 @@ function editNote(code) {
 
 async function confirmAndDelete(code) {
   if (confirm('¿Estás seguro de eliminar esta nota?')) {
-    await notesStore.deleteNote(code)
+    try {
+      await notesStore.deleteNote(code)
+    } catch (err) {
+      handleNotesError(err)
+    }
   }
 }
 
@@ -248,10 +258,17 @@ function cancelInline() {
 
 async function saveInline(code) {
   try {
-    await notesStore.updateNote(code, { content: editingContent.value, file: null })
+    const normalizedContent = editingContent.value.trim()
+
+    if (!normalizedContent) {
+      loadError.value = 'El contenido no puede estar vacío.'
+      return
+    }
+
+    await notesStore.updateNote(code, { content: normalizedContent, file: null })
     cancelInline()
-  } catch {
-    loadError.value = 'No se pudo actualizar la nota.'
+  } catch (err) {
+    handleNotesError(err)
   }
 }
 
@@ -262,5 +279,19 @@ function formatDate(dateStr) {
     month: 'long',
     day: 'numeric'
   })
+}
+
+function handleNotesError(err) {
+  const normalizedError = normalizeNotesError(err)
+  loadError.value = normalizedError.message
+
+  if (normalizedError.code === 'AUTH_SESSION_EXPIRED') {
+    auth.logout()
+    router.push('/login')
+  }
+}
+
+function safeAttachmentUrl(url) {
+  return sanitizeExternalUrl(url)
 }
 </script>

@@ -7,11 +7,11 @@
     <ul v-if="attachments.length" :class="styles.attachList">
       <li v-for="a in attachments" :key="a.url">
         <a
-          :href="a.url"
+          :href="safeAttachmentUrl(a.url)"
           target="_blank"
           rel="noopener noreferrer"
           :class="styles.attachLink"
-        >📎 {{ a.name }}</a>
+        ><Paperclip :size="14" /> {{ a.name }}</a>
       </li>
     </ul>
   </div>
@@ -19,6 +19,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { Paperclip } from 'lucide-vue-next'
+import { sanitizeExternalUrl } from '../utils/security'
 import styles from './NoteCard.module.css'
 
 const props = defineProps({
@@ -36,4 +38,8 @@ const excerpt = computed(() => {
     ? props.content.slice(0, 80) + '…'
     : props.content
 })
+
+function safeAttachmentUrl(url) {
+  return sanitizeExternalUrl(url)
+}
 </script>

@@ -11,11 +11,11 @@
       <ul>
         <li v-for="a in note.attachments" :key="a.url">
           <a
-            :href="a.url"
+            :href="safeAttachmentUrl(a.url)"
             target="_blank"
             rel="noopener noreferrer"
           >
-            📎 {{ a.name }}
+            <Paperclip :size="14" /> {{ a.name }}
           </a>
         </li>
       </ul>
@@ -25,10 +25,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { Paperclip } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import apiClient from '../api/client'
+import { normalizeNotesError } from '../utils/http'
+import { sanitizeExternalUrl } from '../utils/security'
 
 const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
 const note = ref(null)
 const loading = ref(true)
 const error = ref('')
@@ -41,12 +47,22 @@ onMounted(async () => {
     if (!note.value) {
       error.value = 'No se encontro la nota solicitada.'
     }
-  } catch {
-    error.value = 'No fue posible cargar el detalle de la nota.'
+  } catch (err) {
+    const normalizedError = normalizeNotesError(err)
+    error.value = normalizedError.message
+
+    if (normalizedError.code === 'AUTH_SESSION_EXPIRED') {
+      auth.logout()
+      router.push('/login')
+    }
   } finally {
     loading.value = false
   }
 })
+
+function safeAttachmentUrl(url) {
+  return sanitizeExternalUrl(url)
+}
 </script>
 
 <style scoped>

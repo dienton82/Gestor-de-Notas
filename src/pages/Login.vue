@@ -44,8 +44,8 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import styles from './Login.module.css'
 
-const email = ref('test.user4@prolibu.com')
-const password = ref('Prolibu2025!')
+const email = ref('')
+const password = ref('')
 const loading = ref(false)
 const error = ref('')
 
@@ -56,8 +56,17 @@ async function onSubmit() {
   loading.value = true
   error.value = ''
 
+  const normalizedEmail = email.value.trim()
+  const normalizedPassword = password.value.trim()
+
+  if (!normalizedEmail || !normalizedPassword) {
+    error.value = 'Ingresa tu correo y contraseña.'
+    loading.value = false
+    return
+  }
+
   try {
-    await auth.login(email.value, password.value)
+    await auth.login(normalizedEmail, normalizedPassword)
     router.push('/')
   } catch (err) {
     error.value = err?.message || 'No fue posible iniciar sesion.'

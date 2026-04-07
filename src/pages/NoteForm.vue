@@ -42,12 +42,15 @@
 import { ref, onMounted } from 'vue'
 import { Save, X } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
 import apiClient from '../api/client'
+import { normalizeNotesError } from '../utils/http'
 import styles from './NoteForm.module.css'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 const store = useNotesStore()
 
 const content = ref('')
@@ -64,8 +67,14 @@ onMounted(async () => {
 
     const { data } = await apiClient.get(`/note/${noteCode}`)
     content.value = data.contentText || data.content || ''
-  } catch {
-    error.value = 'No fue posible cargar la nota.'
+  } catch (err) {
+    const normalizedError = normalizeNotesError(err)
+    error.value = normalizedError.message
+
+    if (normalizedError.code === 'AUTH_SESSION_EXPIRED') {
+      auth.logout()
+      router.push('/login')
+    }
   }
 })
 
@@ -75,17 +84,29 @@ function onFileChange(e) {
 
 async function onSubmit() {
   error.value = ''
+  const normalizedContent = content.value.trim()
+
+  if (!normalizedContent) {
+    error.value = 'El contenido no puede estar vacío.'
+    return
+  }
 
   try {
     if (isEdit) {
-      await store.updateNote(noteCode, { content: content.value, file: file.value })
+      await store.updateNote(noteCode, { content: normalizedContent, file: file.value })
     } else {
-      await store.createNote({ content: content.value, file: file.value })
+      await store.createNote({ content: normalizedContent, file: file.value })
     }
 
     router.push('/')
-  } catch {
-    error.value = 'No fue posible guardar la nota.'
+  } catch (err) {
+    const normalizedError = normalizeNotesError(err)
+    error.value = normalizedError.message
+
+    if (normalizedError.code === 'AUTH_SESSION_EXPIRED') {
+      auth.logout()
+      router.push('/login')
+    }
   }
 }
 
