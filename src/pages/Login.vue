@@ -1,6 +1,26 @@
 <template>
   <div :class="styles.container">
-    <h2 :class="styles.heading">Iniciar sesión</h2>
+    <div :class="styles.hero">
+      <p :class="styles.eyebrow">Acceso seguro</p>
+      <h2 :class="styles.heading">Iniciar sesión</h2>
+      <p :class="styles.subheading">
+        Entra a la experiencia completa de notas con el mismo flujo visual de la app.
+      </p>
+    </div>
+
+    <div :class="styles.notice">
+      <div :class="styles.noticeIconWrap">
+        <Info :size="16" :class="styles.noticeIcon" />
+      </div>
+      <div :class="styles.noticeBody">
+        <p :class="styles.noticeTitle">Demo pública disponible</p>
+        <p :class="styles.noticeText">
+          Esta demo pública puede usar modo demostración si la API externa no está disponible.
+          Puedes continuar con cualquier correo y contraseña.
+        </p>
+      </div>
+    </div>
+
     <form @submit.prevent="onSubmit" :class="styles.form">
       <div :class="styles.field">
         <label for="email" :class="styles.label">Email</label>
@@ -39,7 +59,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { LogIn } from 'lucide-vue-next'
+import { Info, LogIn } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import styles from './Login.module.css'
