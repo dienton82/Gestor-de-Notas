@@ -1,9 +1,6 @@
 <template>
   <div :class="styles.container">
     <h2 :class="styles.heading">Iniciar sesión</h2>
-    <p v-if="showMockHint" :class="styles.notice">
-      {{ loginHint }}
-    </p>
     <form @submit.prevent="onSubmit" :class="styles.form">
       <div :class="styles.field">
         <label for="email" :class="styles.label">Email</label>
@@ -40,10 +37,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { MOCK_DEMO_MESSAGE, useMockBackend } from '../config/app'
 import styles from './Login.module.css'
 
 const email = ref('test.user4@prolibu.com')
@@ -53,8 +49,6 @@ const error = ref('')
 
 const router = useRouter()
 const auth = useAuthStore()
-const showMockHint = computed(() => useMockBackend)
-const loginHint = computed(() => MOCK_DEMO_MESSAGE)
 
 async function onSubmit() {
   loading.value = true

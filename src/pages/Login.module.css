@@ -23,17 +23,6 @@
     flex-direction: column;
     margin: 0.5rem 0;
   }
-
-  .notice {
-    margin: 0 0 1rem;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    border: 1px solid #bfd9ee;
-    background: rgba(238, 249, 255, 0.95);
-    color: #23415a;
-    font-size: 0.92rem;
-    line-height: 1.4;
-  }
   
   .field {
     margin-bottom: 1rem;
