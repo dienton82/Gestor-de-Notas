@@ -1,3 +1,5 @@
+import { getPublicAssetUrl } from '../utils/assets'
+
 function buildNote(noteCode, contentText, createdAt, attachmentName) {
   return {
     noteCode,
@@ -6,10 +8,10 @@ function buildNote(noteCode, contentText, createdAt, attachmentName) {
     content: contentText,
     createdAt,
     attachments: attachmentName
-      ? [
+        ? [
           {
             name: attachmentName,
-            url: '#'
+            url: getPublicAssetUrl(`demo/${attachmentName}`)
           }
         ]
       : []

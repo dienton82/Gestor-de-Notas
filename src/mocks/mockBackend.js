@@ -1,4 +1,5 @@
 import { cloneDemoNotes } from './demoNotes'
+import { getPublicAssetUrl } from '../utils/assets'
 
 const NOTES_STORAGE_KEY = 'mock-notes'
 const TOKEN_STORAGE_KEY = 'jwt'
@@ -8,20 +9,42 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value))
 }
 
+function normalizeAttachments(attachments = []) {
+  return attachments.map(attachment => {
+    if (attachment?.name === 'brief-demo.pdf' && (!attachment.url || attachment.url === '#')) {
+      return {
+        ...attachment,
+        url: getPublicAssetUrl('demo/brief-demo.pdf')
+      }
+    }
+
+    return attachment
+  })
+}
+
+function normalizeNotes(notes = []) {
+  return notes.map(note => ({
+    ...note,
+    attachments: normalizeAttachments(note.attachments || [])
+  }))
+}
+
 function readNotes() {
   const saved = localStorage.getItem(NOTES_STORAGE_KEY)
 
   if (!saved) {
-    const initialNotes = cloneDemoNotes()
+    const initialNotes = normalizeNotes(cloneDemoNotes())
     localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(initialNotes))
     return initialNotes
   }
 
   try {
     const parsed = JSON.parse(saved)
-    return Array.isArray(parsed) ? parsed : cloneDemoNotes()
+    const normalized = Array.isArray(parsed) ? normalizeNotes(parsed) : normalizeNotes(cloneDemoNotes())
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(normalized))
+    return normalized
   } catch {
-    const fallback = cloneDemoNotes()
+    const fallback = normalizeNotes(cloneDemoNotes())
     localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(fallback))
     return fallback
   }
@@ -50,10 +73,20 @@ function readFormDataValue(payload, key) {
   return payload?.[key]
 }
 
-function buildNotePayload(existing, payload) {
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '')
+    reader.onerror = () => reject(new Error('No fue posible leer el archivo adjunto'))
+    reader.readAsDataURL(file)
+  })
+}
+
+async function buildNotePayload(existing, payload) {
   const content = readFormDataValue(payload, 'content') || existing?.contentText || ''
   const title = readFormDataValue(payload, 'title') || existing?.title || existing?.noteCode || 'Nota demo'
   const file = readFormDataValue(payload, 'attachment')
+  const attachmentUrl = file ? await fileToDataUrl(file) : ''
 
   return {
     ...existing,
@@ -64,7 +97,7 @@ function buildNotePayload(existing, payload) {
       ? [
           {
             name: file.name || 'adjunto-demo',
-            url: '#'
+            url: attachmentUrl
           }
         ]
       : existing?.attachments || []
@@ -122,14 +155,14 @@ const mockApiClient = {
       const created = {
         noteCode,
         createdAt: new Date().toISOString(),
-        ...buildNotePayload(
+        ...(await buildNotePayload(
           {
             noteCode,
             createdAt: new Date().toISOString(),
             attachments: []
           },
           payload
-        )
+        ))
       }
 
       notes.unshift(created)
@@ -181,7 +214,7 @@ const mockApiClient = {
 
     const updated = {
       ...notes[index],
-      ...buildNotePayload(notes[index], payload)
+      ...(await buildNotePayload(notes[index], payload))
     }
 
     notes.splice(index, 1, updated)
