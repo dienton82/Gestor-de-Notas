@@ -47,11 +47,11 @@
       </div>
 
       <div :class="styles.buttons">
-        <button type="submit" :class="styles.submitBtn">
+        <button type="submit" :class="styles.submitBtn" :disabled="saving">
           <Save :size="16" :class="styles.buttonIcon" />
-          {{ isEdit ? 'Actualizar' : 'Guardar' }}
+          {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Guardar') }}
         </button>
-        <button type="button" @click="cancel" :class="styles.cancelBtn">
+        <button type="button" @click="cancel" :class="styles.cancelBtn" :disabled="saving">
           <X :size="16" :class="styles.buttonIcon" />
           Cancelar
         </button>
@@ -80,6 +80,7 @@ const content = ref('')
 const file = ref(null)
 const fileInputRef = ref(null)
 const error = ref('')
+const saving = ref(false)
 const currentAttachment = ref(null)
 const noteCode = route.params.noteCode
 const isEdit = Boolean(noteCode)
@@ -125,6 +126,8 @@ async function onSubmit() {
     return
   }
 
+  saving.value = true
+
   try {
     if (isEdit) {
       await store.updateNote(noteCode, { content: normalizedContent, file: file.value })
@@ -141,6 +144,8 @@ async function onSubmit() {
       auth.logout()
       router.push('/login')
     }
+  } finally {
+    saving.value = false
   }
 }
 

@@ -110,6 +110,17 @@
                   <CalendarDays :size="16" :class="styles.metaIcon" />
                   {{ formatDate(nota.createdAt) }}
                 </span>
+                <span v-if="nota.attachments?.length && attachmentLink(nota.attachments[0]).href">
+                  <Paperclip :size="16" :class="styles.metaIcon" />
+                  <a
+                    :href="attachmentLink(nota.attachments[0]).href"
+                    :target="attachmentLink(nota.attachments[0]).target"
+                    :rel="attachmentLink(nota.attachments[0]).rel"
+                    :download="attachmentLink(nota.attachments[0]).download"
+                  >
+                    {{ nota.attachments[0].name || 'Ver archivo' }}
+                  </a>
+                </span>
               </div>
               <div :class="styles.actions">
                 <button :class="styles.linkEdit" @click.stop="editNote(nota)">
@@ -157,6 +168,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Paperclip,
   Pencil,
   Plus,
   Save,
@@ -169,6 +181,7 @@ import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import NoteCard from '../components/NoteCard.vue'
+import { getAttachmentLinkAttributes } from '../utils/attachments'
 import { normalizeNotesError } from '../utils/http'
 import styles from './NotesList.module.css'
 
@@ -384,6 +397,10 @@ function handleNotesError(err) {
     auth.logout()
     router.push('/login')
   }
+}
+
+function attachmentLink(attachment) {
+  return getAttachmentLinkAttributes(attachment)
 }
 
 function syncViewportMode() {
