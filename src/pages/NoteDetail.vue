@@ -11,9 +11,10 @@
       <ul>
         <li v-for="a in note.attachments" :key="a.url">
           <a
-            :href="safeAttachmentUrl(a.url)"
-            target="_blank"
-            rel="noopener noreferrer"
+            :href="attachmentLink(a).href"
+            :target="attachmentLink(a).target"
+            :rel="attachmentLink(a).rel"
+            :download="attachmentLink(a).download"
           >
             <Paperclip :size="14" /> {{ a.name }}
           </a>
@@ -29,8 +30,8 @@ import { Paperclip } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import apiClient from '../api/client'
+import { getAttachmentLinkAttributes } from '../utils/attachments'
 import { normalizeNotesError } from '../utils/http'
-import { sanitizeExternalUrl } from '../utils/security'
 
 const route = useRoute()
 const router = useRouter()
@@ -60,8 +61,8 @@ onMounted(async () => {
   }
 })
 
-function safeAttachmentUrl(url) {
-  return sanitizeExternalUrl(url)
+function attachmentLink(attachment) {
+  return getAttachmentLinkAttributes(attachment)
 }
 </script>
 
