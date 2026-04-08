@@ -180,11 +180,10 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
   if (cloudinaryUnsignedUploadPreset) {
     form.append('upload_preset', cloudinaryUnsignedUploadPreset)
     form.append('public_id', publicId)
-    form.append('access_mode', 'public')
     if (cloudinaryFolder) {
       form.append('folder', cloudinaryFolder)
     }
-    console.log('[CLOUDINARY] Modo: unsigned preset =', cloudinaryUnsignedUploadPreset, '| public_id =', publicId, '| folder =', cloudinaryFolder, '| access_mode = public')
+    console.log('[CLOUDINARY] Modo: unsigned preset =', cloudinaryUnsignedUploadPreset, '| public_id =', publicId, '| folder =', cloudinaryFolder)
   } else {
     const timestamp = Math.floor(Date.now() / 1000)
     const signature = signCloudinaryParams({
