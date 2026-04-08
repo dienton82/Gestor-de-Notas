@@ -215,15 +215,12 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
   }
 
   const payload = JSON.parse(responseText)
-  const rawUrl = payload.secure_url || payload.url
+  const finalUrl = payload.secure_url || payload.url
 
-  if (!rawUrl) {
+  if (!finalUrl) {
     console.error('[CLOUDINARY] Respuesta sin URL:', responseText.slice(0, 500))
     throw createHttpError(502, 'Cloudinary no devolvió URL del archivo subido')
   }
-
-  // Forzar que el navegador abra el PDF inline (no descarga)
-  const finalUrl = rawUrl.replace('/raw/upload/', '/raw/upload/fl_attachment:false/')
 
   console.log('[CLOUDINARY] Subida exitosa:', finalUrl)
 
