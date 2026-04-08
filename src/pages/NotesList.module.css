@@ -481,6 +481,7 @@
   }
 
   .searchField {
+    flex: none;
     min-width: 0;
   }
 
