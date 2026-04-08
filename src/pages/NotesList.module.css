@@ -346,7 +346,7 @@
 
 .itemContent {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 1rem;
 }
 
@@ -354,9 +354,10 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.65rem;
+  justify-content: space-between;
   margin-left: auto;
   min-width: 136px;
+  padding: 0.2rem 0;
 }
 
 .meta {
