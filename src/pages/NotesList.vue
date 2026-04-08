@@ -110,10 +110,6 @@
                   <CalendarDays :size="16" :class="styles.metaIcon" />
                   {{ formatDate(nota.createdAt) }}
                 </span>
-                <span v-if="nota.attachments?.length" :class="styles.metaItem">
-                  <Paperclip :size="16" :class="styles.metaIcon" />
-                  {{ nota.attachments[0].name || 'Adjunto' }}
-                </span>
               </div>
               <div :class="styles.actions">
                 <button :class="styles.linkEdit" @click.stop="editNote(nota)">
@@ -161,7 +157,6 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Paperclip,
   Pencil,
   Plus,
   Save,
