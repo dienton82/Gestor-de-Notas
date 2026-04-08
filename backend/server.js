@@ -9,7 +9,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const publicDir = path.join(__dirname, 'public')
 const uploadsDir = path.join(publicDir, 'uploads')
-const notesFile = path.join(__dirname, 'data', 'demo-notes.json')
+const seedNotesFile = path.join(__dirname, 'data', 'demo-notes.json')
+const runtimeNotesFile = path.join(__dirname, 'data', 'runtime-notes.json')
 
 fs.mkdirSync(uploadsDir, { recursive: true })
 
@@ -25,13 +26,36 @@ const allowedOrigins = new Set(
 app.set('trust proxy', true)
 
 function loadSeedNotes() {
-  const raw = fs.readFileSync(notesFile, 'utf8')
+  const raw = fs.readFileSync(seedNotesFile, 'utf8')
   const parsed = JSON.parse(raw)
 
   return Array.isArray(parsed) ? parsed : []
 }
 
-let notes = loadSeedNotes()
+function writeRuntimeNotes(nextNotes) {
+  fs.writeFileSync(runtimeNotesFile, JSON.stringify(nextNotes, null, 2))
+}
+
+function loadNotes() {
+  if (fs.existsSync(runtimeNotesFile)) {
+    try {
+      const raw = fs.readFileSync(runtimeNotesFile, 'utf8')
+      const parsed = JSON.parse(raw)
+
+      if (Array.isArray(parsed)) {
+        return parsed
+      }
+    } catch {
+      // Si el archivo runtime queda corrupto, se regenera desde la semilla.
+    }
+  }
+
+  const seededNotes = loadSeedNotes()
+  writeRuntimeNotes(seededNotes)
+  return seededNotes
+}
+
+let notes = loadNotes()
 const validTokens = new Set()
 
 function buildApiBaseUrl(req) {
@@ -228,6 +252,7 @@ app.post('/note/', requireAuth, upload.single('attachment'), (req, res, next) =>
     }
 
     notes.unshift(note)
+    writeRuntimeNotes(notes)
     res.status(201).json(serializeNote(req, note))
   } catch (error) {
     next(error)
@@ -267,6 +292,7 @@ app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res
     }
 
     notes.splice(index, 1, updated)
+    writeRuntimeNotes(notes)
     res.json(serializeNote(req, updated))
   } catch (error) {
     next(error)
@@ -283,6 +309,7 @@ app.delete('/note/:noteCode', requireAuth, (req, res, next) => {
 
     const [removed] = notes.splice(index, 1)
     ;(removed.attachments || []).forEach(removeAttachmentFile)
+    writeRuntimeNotes(notes)
 
     res.json({ success: true })
   } catch (error) {

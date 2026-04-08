@@ -21,3 +21,4 @@ yarn-debug.log*
 # Archivos cargados por el backend demo
 /backend/public/uploads/*
 !/backend/public/uploads/.gitkeep
+/backend/data/runtime-notes.json
