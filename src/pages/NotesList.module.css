@@ -350,15 +350,21 @@
   gap: 1rem;
 }
 
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.65rem;
+  margin-left: auto;
+  min-width: 136px;
+}
+
 .meta {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
-  min-width: 160px;
-  margin-top: 0.1rem;
   font-size: 0.84rem;
   color: var(--app-text-soft);
-  padding-top: 0.2rem;
 }
 
 .metaItem,
@@ -382,8 +388,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  margin-left: auto;
-  min-width: 136px;
 }
 
 .inlineEditor {
@@ -431,12 +435,17 @@
     flex-direction: column;
   }
 
+  .sidebar {
+    margin-left: 0;
+    min-width: 0;
+    align-items: flex-start;
+  }
+
   .meta {
     min-width: 0;
   }
 
   .actions {
-    margin-left: 0;
     flex-direction: row;
     flex-wrap: wrap;
   }

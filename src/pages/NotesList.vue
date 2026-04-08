@@ -105,21 +105,23 @@
                 :attachments="nota.attachments || []"
                 :show-inline-hint="true"
               />
-              <div :class="styles.meta">
-                <span :class="styles.metaItem">
-                  <CalendarDays :size="16" :class="styles.metaIcon" />
-                  {{ formatDate(nota.createdAt) }}
-                </span>
-              </div>
-              <div :class="styles.actions">
-                <button :class="styles.linkEdit" @click.stop="editNote(nota)">
-                  <Pencil :size="16" :class="styles.buttonIcon" />
-                  Editar
-                </button>
-                <button :class="styles.linkDelete" @click.stop="confirmAndDelete(nota.noteCode)">
-                  <Trash2 :size="16" :class="styles.buttonIcon" />
-                  Eliminar
-                </button>
+              <div :class="styles.sidebar">
+                <div :class="styles.actions">
+                  <button :class="styles.linkEdit" @click.stop="editNote(nota)">
+                    <Pencil :size="16" :class="styles.buttonIcon" />
+                    Editar
+                  </button>
+                  <button :class="styles.linkDelete" @click.stop="confirmAndDelete(nota.noteCode)">
+                    <Trash2 :size="16" :class="styles.buttonIcon" />
+                    Eliminar
+                  </button>
+                </div>
+                <div :class="styles.meta">
+                  <span :class="styles.metaItem">
+                    <CalendarDays :size="16" :class="styles.metaIcon" />
+                    {{ formatDate(nota.createdAt) }}
+                  </span>
+                </div>
               </div>
             </div>
           </li>
