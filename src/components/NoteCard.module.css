@@ -81,6 +81,16 @@
   color: #9a7418;
 }
 
+@media (max-width: 860px) {
+  .card {
+    flex: none;
+  }
+
+  .inlineHint {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .card {
     width: 100%;
@@ -89,11 +99,6 @@
 
   .title {
     font-size: 0.95rem;
-  }
-
-  .inlineHint {
-    margin-bottom: 0.65rem;
-    font-size: 0.72rem;
   }
 
   .content {

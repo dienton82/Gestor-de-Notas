@@ -98,7 +98,7 @@
               </div>
             </div>
 
-            <div v-else :class="styles.itemContent" @dblclick="startInline(nota)">
+            <div v-else :class="styles.itemContent" @dblclick="handleCardDblClick(nota)">
               <NoteCard
                 :title="nota.noteCode"
                 :content="nota.contentText"
@@ -118,7 +118,7 @@
                 </span>
               </div>
               <div :class="styles.actions">
-                <button :class="styles.linkEdit" @click.stop="editNote(nota.noteCode)">
+                <button :class="styles.linkEdit" @click.stop="editNote(nota)">
                   <Pencil :size="16" :class="styles.buttonIcon" />
                   Editar
                 </button>
@@ -194,6 +194,7 @@ const isSortMenuOpen = ref(false)
 const sortMenuRef = ref(null)
 const isDeleteDialogOpen = ref(false)
 const noteCodeToDelete = ref(null)
+const isMobileViewport = ref(false)
 
 const sortOptions = [
   { value: 'createdAt', label: 'Ordenar por fecha' },
@@ -206,6 +207,8 @@ const currentSortLabel = computed(() =>
 )
 
 onMounted(async () => {
+  syncViewportMode()
+
   try {
     await notesStore.fetchNotes()
   } catch (err) {
@@ -215,10 +218,12 @@ onMounted(async () => {
   }
 
   document.addEventListener('pointerdown', handlePointerDown)
+  window.addEventListener('resize', syncViewportMode)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', handlePointerDown)
+  window.removeEventListener('resize', syncViewportMode)
 })
 
 const filteredNotes = computed(() => {
@@ -299,8 +304,13 @@ function handlePointerDown(event) {
   }
 }
 
-function editNote(code) {
-  router.push(`/notes/${code}/edit`)
+function editNote(nota) {
+  if (isMobileViewport.value) {
+    startInline(nota)
+    return
+  }
+
+  router.push(`/notes/${nota.noteCode}/edit`)
 }
 
 async function confirmAndDelete(code) {
@@ -334,6 +344,14 @@ const editingContent = ref('')
 function startInline(nota) {
   editingCode.value = nota.noteCode
   editingContent.value = nota.contentText || ''
+}
+
+function handleCardDblClick(nota) {
+  if (isMobileViewport.value) {
+    return
+  }
+
+  startInline(nota)
 }
 
 function cancelInline() {
@@ -378,5 +396,9 @@ function handleNotesError(err) {
 
 function safeAttachmentUrl(url) {
   return sanitizeExternalUrl(url)
+}
+
+function syncViewportMode() {
+  isMobileViewport.value = window.innerWidth <= 860
 }
 </script>
