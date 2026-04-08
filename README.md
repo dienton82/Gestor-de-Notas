@@ -1,16 +1,30 @@
 # Gestor de Notas
 
-Aplicación SPA desarrollada con Vue 3 para la gestión de notas personales. El proyecto incluye autenticación con soporte de modo demo, CRUD completo de notas, consumo de API externa, manejo de estado con Pinia y navegación con Vue Router. La interfaz utiliza una línea visual moderna basada en escalas de grises con acentos amarillos y un sistema de estilos personalizado.
+Aplicación SPA desarrollada con Vue 3 para la gestión de notas personales. El proyecto mantiene la interfaz actual del frontend y añade una API demo mínima en Express para ofrecer una demo pública más estable, con autenticación básica, CRUD completo de notas y archivos PDF servidos como recursos estáticos reales.
+
+## Arquitectura
+
+- Frontend SPA con Vue 3, Vite, Pinia y Vue Router
+- Backend demo con Express para autenticación, notas y adjuntos
+- API externa opcional para desarrollo o integración real
+- Despliegue recomendado: frontend en Vercel y backend en Render o Railway
 
 ## Demo
 
-Aplicación desplegada en:
+Demo pública actual:
 
 `https://dienton82.github.io/Gestor-de-Notas/`
 
-En el entorno público, el formulario de acceso incluye credenciales precargadas y puede continuar en modo demo cuando la API externa no está disponible desde el navegador.
+Arquitectura recomendada para demo estable:
+
+- frontend desplegado en Vercel
+- backend demo desplegado en Render o Railway
+
+El formulario de acceso incluye credenciales precargadas para facilitar la revisión del flujo. Si se usa el backend demo, cualquier correo y contraseña no vacíos permiten entrar a la aplicación.
 
 ## Tecnologías
+
+### Frontend
 
 - Vue 3
 - Vite
@@ -18,136 +32,205 @@ En el entorno público, el formulario de acceso incluye credenciales precargadas
 - Vue Router
 - Axios
 - CSS Modules
+- lucide-vue-next
+
+### Backend demo
+
+- Node.js
+- Express
+- CORS
+- Multer
 
 ## Funcionalidades
 
-- Autenticación de usuario con soporte de modo demo
+- Autenticación de usuario con soporte de entorno demo
 - CRUD completo de notas
-- Edición inline mediante doble clic
-- Búsqueda por contenido o identificador
-- Ordenamiento por campos clave
+- Edición inline en escritorio
+- Búsqueda por título o contenido
+- Ordenamiento por fecha
 - Paginación
 - Agrupación por fecha: Hoy, Ayer y Esta semana
+- Adjuntos PDF servidos desde backend demo
 - Interfaz responsive para escritorio y móvil
 
 ## Diseño e interfaz
 
-La interfaz sigue una línea visual basada en grises neutros y un amarillo sobrio como color de acento. El objetivo es mantener una UI moderna, clara y consistente, con mejor jerarquía visual y contraste entre acciones, contenido y estados.
+La UI sigue una línea visual moderna y sobria basada en escalas de grises con amarillo como color de acento. El sistema visual prioriza legibilidad, contraste y consistencia entre formularios, acciones, tarjetas y estados interactivos.
 
-Se definió un sistema visual personalizado para:
+La personalización incluye:
 
-- botones principales, secundarios y de acción
-- inputs y estados de foco
-- dropdowns y controles personalizados
-- tarjetas de notas y contenedores principales
-- eliminación de estilos nativos del navegador en select e input file
+- botones primarios, secundarios y de acción con estilo consistente
+- inputs, file input y dropdowns personalizados
+- eliminación de estilos nativos del navegador cuando afectaban la experiencia
+- tarjetas y contenedores con jerarquía visual clara
 
-## Ejecución
+## Ejecución local
 
-### Instalación
+### 1. Instalar dependencias
 
 ```bash
-git clone https://github.com/dienton82/Gestor-de-Notas.git
-cd Gestor-de-Notas
 npm install
+npm --prefix backend install
 ```
 
-### Desarrollo
+### 2. Ejecutar frontend y backend demo
 
-Para trabajar contra la API real en entorno local:
+Backend demo:
 
 ```bash
-echo VITE_API_URL=https://stg.prolibu.com/v2 > .env
-echo VITE_API_MODE=real >> .env
+npm run dev:backend
+```
+
+Frontend:
+
+```bash
 npm run dev
 ```
 
-Opcionalmente, puede habilitarse un proxy local de Vite para evitar bloqueos del navegador durante desarrollo:
+Por defecto, el frontend en producción usa el modo `demo` y en desarrollo usa el modo `real`. Si quieres trabajar localmente contra el backend demo, define `VITE_API_MODE=demo`.
 
-```bash
-echo VITE_USE_API_PROXY=true >> .env
-echo VITE_API_PROXY_TARGET=https://stg.prolibu.com >> .env
-```
-
-### Build de producción
+### 3. Build del frontend
 
 ```bash
 npm run build
 ```
 
-### Deploy
+## Variables de entorno
+
+### Frontend
+
+Archivo recomendado: `.env`
 
 ```bash
-npm run deploy
+VITE_API_MODE=demo
+VITE_API_URL=https://stg.prolibu.com/v2
+VITE_DEMO_API_URL=http://localhost:4000
+VITE_USE_API_PROXY=false
+VITE_API_PROXY_TARGET=https://stg.prolibu.com
+VITE_APP_BASE_PATH=/
 ```
 
-## API y modo demo
+Valores admitidos para `VITE_API_MODE`:
 
-La aplicación puede consumir la API externa configurada en:
+- `real`: usa la API externa
+- `demo`: usa el backend Express
+- `mock`: usa el mock local del frontend como fallback
 
-`https://stg.prolibu.com/v2`
+Notas:
 
-En desarrollo local, el proyecto puede trabajar con esa API mediante `VITE_API_URL` y, si se desea, con proxy local de Vite.
+- para Vercel, `VITE_APP_BASE_PATH=/`
+- para GitHub Pages, `VITE_APP_BASE_PATH=/Gestor-de-Notas/`
+- el proxy de Vite sólo aplica cuando `VITE_API_MODE=real`
 
-En producción pública, especialmente en GitHub Pages, el consumo directo de la API externa puede verse afectado por restricciones CORS del servidor remoto. Para mantener la experiencia operativa, la aplicación utiliza un backend mock local y puede continuar en modo demo sin romper el flujo de autenticación ni el CRUD visual.
+### Backend
 
-Esto implica lo siguiente:
+Archivo recomendado: `backend/.env`
 
-- en local puede usarse la API real
-- en entorno público puede activarse el flujo demo
-- las notas generadas en la demo se almacenan localmente en el navegador
+```bash
+PORT=4000
+PUBLIC_API_URL=http://localhost:4000
+ALLOWED_ORIGINS=http://localhost:5173
+```
 
-### Variables de entorno útiles
+`ALLOWED_ORIGINS` admite múltiples dominios separados por coma, por ejemplo:
 
-- `VITE_API_MODE=real` para usar la API real
-- `VITE_API_MODE=mock` para forzar el backend mock
-- `VITE_API_URL=https://stg.prolibu.com/v2`
-- `VITE_USE_API_PROXY=true`
-- `VITE_API_PROXY_TARGET=https://stg.prolibu.com`
+```bash
+ALLOWED_ORIGINS=http://localhost:5173,https://tu-frontend.vercel.app
+```
 
-## Endpoints utilizados
+## API demo
+
+El backend demo expone estos endpoints:
 
 - `POST /auth/signin`
 - `GET /note/`
+- `GET /note/:noteCode`
 - `POST /note/`
-- `GET /note/{noteCode}`
-- `PATCH /note/{noteCode}`
-- `DELETE /note/{noteCode}`
+- `PATCH /note/:noteCode`
+- `DELETE /note/:noteCode`
+- `GET /files/demo/brief-demo.pdf`
+
+Características del backend demo:
+
+- usa datos semilla definidos en JSON
+- mantiene notas en memoria durante la ejecución
+- guarda nuevos adjuntos en `backend/public/uploads`
+- resuelve URLs de archivos con base en la URL pública del backend
+- permite CORS configurable para el frontend desplegado
+
+## Despliegue recomendado
+
+### Frontend en Vercel
+
+Configura:
+
+- framework preset: `Vite`
+- build command: `npm run build`
+- output directory: `dist`
+
+Variables sugeridas en Vercel:
+
+```bash
+VITE_API_MODE=demo
+VITE_DEMO_API_URL=https://tu-backend-demo.onrender.com
+VITE_APP_BASE_PATH=/
+```
+
+El archivo `vercel.json` incluye un rewrite a `index.html` para soportar Vue Router en modo SPA.
+
+### Backend en Render o Railway
+
+Usa la carpeta `backend/` como servicio Node.js.
+
+Configuración mínima:
+
+- install command: `npm install`
+- start command: `npm start`
+- root directory: `backend`
+
+Variables sugeridas:
+
+```bash
+PUBLIC_API_URL=https://tu-backend-demo.onrender.com
+ALLOWED_ORIGINS=https://tu-frontend.vercel.app
+```
+
+## Estructura del proyecto
+
+```text
+Gestor-de-Notas/
+├── backend/
+│   ├── data/        # Datos semilla para la demo
+│   ├── public/      # PDFs demo y uploads servidos por Express
+│   ├── server.js    # API demo mínima
+│   └── package.json
+├── public/          # Assets del frontend y fallback mock
+├── src/
+│   ├── api/         # Cliente HTTP
+│   ├── components/  # Componentes reutilizables
+│   ├── config/      # Estrategia de entornos y URLs
+│   ├── mocks/       # Fallback mock local del frontend
+│   ├── pages/       # Vistas principales
+│   ├── router/      # Rutas y guards
+│   ├── stores/      # Estado global con Pinia
+│   ├── utils/       # Helpers de errores, seguridad y adjuntos
+│   └── main.js
+├── package.json
+├── README.md
+├── vercel.json
+└── vite.config.js
+```
 
 ## Credenciales de acceso
 
-Para la demo pública, el login incluye estos valores precargados:
+Valores precargados en la pantalla de login:
 
 ```txt
 Email:    test.user4@prolibu.com
 Password: Prolibu2025!
 ```
 
-El usuario puede modificarlos manualmente antes de iniciar sesión.
-
-## Estructura del proyecto
-
-```text
-Gestor-de-Notas/
-├── public/
-├── src/
-│   ├── api/         # Cliente HTTP y configuración de consumo
-│   ├── components/  # Componentes reutilizables de interfaz
-│   ├── config/      # Configuración de entorno y comportamiento por modo
-│   ├── mocks/       # Backend mock y datos para demo pública
-│   ├── pages/       # Vistas principales de la aplicación
-│   ├── router/      # Definición de rutas y guards
-│   ├── stores/      # Estado global con Pinia
-│   ├── utils/       # Helpers de errores, seguridad y soporte UI
-│   └── main.js
-├── package.json
-├── README.md
-└── vite.config.js
-```
-
-## Captura
-
-![Pantalla principal](public/gestorNotas.webp)
+En el backend demo se permite cualquier correo y contraseña no vacíos.
 
 ## Licencia
 

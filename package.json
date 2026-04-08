@@ -6,6 +6,8 @@
   "homepage": "https://dienton82.github.io/Gestor-de-Notas",
   "scripts": {
     "dev": "vite",
+    "dev:backend": "npm --prefix backend run dev",
+    "start:backend": "npm --prefix backend run start",
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",

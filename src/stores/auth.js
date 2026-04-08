@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import apiClient from '../api/client'
 import { normalizeAuthError } from '../utils/http'
-import { useMockBackend } from '../config/app'
+import { apiMode, useMockBackend } from '../config/app'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('jwt', jwt)
         apiClient.defaults.headers.common.Authorization = `Bearer ${jwt}`
 
-        return { mode: useMockBackend ? 'mock' : 'authenticated' }
+        return { mode: useMockBackend ? 'mock' : apiMode }
       } catch (error) {
         const authError = normalizeAuthError(error)
         const wrappedError = new Error(authError.message)

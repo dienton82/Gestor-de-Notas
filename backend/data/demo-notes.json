@@ -1,0 +1,31 @@
+[
+  {
+    "noteCode": "DEMO-001",
+    "title": "DEMO-001",
+    "content": "Seguimiento del despliegue en GitHub Pages. Esta nota demuestra la navegación y el layout cuando la API real no está disponible en la demo pública.",
+    "contentText": "Seguimiento del despliegue en GitHub Pages. Esta nota demuestra la navegación y el layout cuando la API real no está disponible en la demo pública.",
+    "createdAt": "2026-04-07T08:30:00.000Z",
+    "attachments": [
+      {
+        "name": "brief-demo.pdf",
+        "path": "demo/brief-demo.pdf"
+      }
+    ]
+  },
+  {
+    "noteCode": "DEMO-002",
+    "title": "DEMO-002",
+    "content": "Pendiente: habilitar proxy en desarrollo local si se quiere evitar bloqueo del navegador al apuntar al backend externo desde otra URL.",
+    "contentText": "Pendiente: habilitar proxy en desarrollo local si se quiere evitar bloqueo del navegador al apuntar al backend externo desde otra URL.",
+    "createdAt": "2026-04-05T14:15:00.000Z",
+    "attachments": []
+  },
+  {
+    "noteCode": "DEMO-003",
+    "title": "DEMO-003",
+    "content": "La UI sigue operativa en modo demo: puedes crear, editar y eliminar notas de ejemplo sin depender del backend remoto.",
+    "contentText": "La UI sigue operativa en modo demo: puedes crear, editar y eliminar notas de ejemplo sin depender del backend remoto.",
+    "createdAt": "2026-04-03T18:00:00.000Z",
+    "attachments": []
+  }
+]
