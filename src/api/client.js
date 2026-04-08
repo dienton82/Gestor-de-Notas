@@ -6,8 +6,7 @@ import mockApiClient from '../mocks/mockBackend'
 const apiClient = useMockBackend
   ? mockApiClient
   : axios.create({
-      baseURL: API_URL,
-      headers: { 'Content-Type': 'application/json' }
+      baseURL: API_URL
     })
 
 if (!useMockBackend) {

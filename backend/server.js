@@ -167,11 +167,20 @@ function signCloudinaryParams(params) {
 }
 
 async function uploadAttachmentToCloudinary(file, noteCode) {
+  const mimeType = file.mimetype || 'application/pdf'
+  const base64Uri = `data:${mimeType};base64,${file.buffer.toString('base64')}`
+
+  console.log('[CLOUDINARY] Subiendo archivo:', file.originalname, '| tamaño:', file.buffer.length, '| tipo:', mimeType)
+
   const form = new FormData()
-  form.append('file', new Blob([file.buffer], { type: file.mimetype || 'application/pdf' }), file.originalname)
+  form.append('file', base64Uri)
 
   if (cloudinaryUnsignedUploadPreset) {
     form.append('upload_preset', cloudinaryUnsignedUploadPreset)
+    if (cloudinaryFolder) {
+      form.append('folder', cloudinaryFolder)
+    }
+    console.log('[CLOUDINARY] Modo: unsigned preset =', cloudinaryUnsignedUploadPreset, '| folder =', cloudinaryFolder)
   } else {
     const timestamp = Math.floor(Date.now() / 1000)
     const publicId = buildCloudinaryPublicId(noteCode, file.originalname)
@@ -188,24 +197,37 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
     form.append('signature', signature)
   }
 
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/raw/upload`, {
+  const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/raw/upload`
+  console.log('[CLOUDINARY] POST →', uploadUrl)
+
+  const response = await fetch(uploadUrl, {
     method: 'POST',
     body: form
   })
 
+  const responseText = await response.text()
+  console.log('[CLOUDINARY] Respuesta status:', response.status, '| body:', responseText.slice(0, 500))
+
   if (!response.ok) {
-    const errorPayload = await response.text()
-    throw createHttpError(502, `No fue posible subir el adjunto a Cloudinary: ${errorPayload}`)
+    throw createHttpError(502, `No fue posible subir el adjunto a Cloudinary: ${responseText}`)
   }
 
-  const payload = await response.json()
+  const payload = JSON.parse(responseText)
+  const finalUrl = payload.secure_url || payload.url
+
+  if (!finalUrl) {
+    console.error('[CLOUDINARY] Respuesta sin URL:', responseText.slice(0, 500))
+    throw createHttpError(502, 'Cloudinary no devolvió URL del archivo subido')
+  }
+
+  console.log('[CLOUDINARY] Subida exitosa:', finalUrl)
 
   return {
     name: file.originalname || 'adjunto-demo.pdf',
     mimeType: resolveAttachmentMimeType(file.originalname, file.mimetype),
     storage: 'cloudinary',
     publicId: payload.public_id,
-    url: payload.secure_url
+    url: finalUrl
   }
 }
 
