@@ -42,7 +42,10 @@ const props = defineProps({
 })
 
 const excerpt = computed(() => {
-  return props.content || ''
+  if (!props.content) return ''
+  return props.content.length > 80
+    ? props.content.slice(0, 80) + '…'
+    : props.content
 })
 
 function attachmentLink(attachment) {
