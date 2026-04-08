@@ -140,7 +140,7 @@ function sanitizeFilename(filename = 'adjunto-demo') {
 function buildCloudinaryPublicId(noteCode, filename) {
   const safeFilename = sanitizeFilename(filename || 'adjunto-demo.pdf')
   const baseName = path.basename(safeFilename)
-  return `${cloudinaryFolder}/${noteCode}-${Date.now()}-${baseName}`
+  return `${noteCode}-${Date.now()}-${baseName}`
 }
 
 function signCloudinaryParams(params) {
