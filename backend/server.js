@@ -175,15 +175,17 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
   const form = new FormData()
   form.append('file', base64Uri)
 
+  const publicId = buildCloudinaryPublicId(noteCode, file.originalname)
+
   if (cloudinaryUnsignedUploadPreset) {
     form.append('upload_preset', cloudinaryUnsignedUploadPreset)
+    form.append('public_id', publicId)
     if (cloudinaryFolder) {
       form.append('folder', cloudinaryFolder)
     }
-    console.log('[CLOUDINARY] Modo: unsigned preset =', cloudinaryUnsignedUploadPreset, '| folder =', cloudinaryFolder)
+    console.log('[CLOUDINARY] Modo: unsigned preset =', cloudinaryUnsignedUploadPreset, '| public_id =', publicId, '| folder =', cloudinaryFolder)
   } else {
     const timestamp = Math.floor(Date.now() / 1000)
-    const publicId = buildCloudinaryPublicId(noteCode, file.originalname)
     const signature = signCloudinaryParams({
       folder: cloudinaryFolder,
       public_id: publicId,
@@ -213,12 +215,15 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
   }
 
   const payload = JSON.parse(responseText)
-  const finalUrl = payload.secure_url || payload.url
+  const rawUrl = payload.secure_url || payload.url
 
-  if (!finalUrl) {
+  if (!rawUrl) {
     console.error('[CLOUDINARY] Respuesta sin URL:', responseText.slice(0, 500))
     throw createHttpError(502, 'Cloudinary no devolvió URL del archivo subido')
   }
+
+  // Forzar que el navegador abra el PDF inline (no descarga)
+  const finalUrl = rawUrl.replace('/raw/upload/', '/raw/upload/fl_attachment:false/')
 
   console.log('[CLOUDINARY] Subida exitosa:', finalUrl)
 
