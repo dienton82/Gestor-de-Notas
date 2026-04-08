@@ -18,6 +18,9 @@ const cloudinaryCloudName = String(process.env.CLOUDINARY_CLOUD_NAME || '').trim
 const cloudinaryApiKey = String(process.env.CLOUDINARY_API_KEY || '').trim()
 const cloudinaryApiSecret = String(process.env.CLOUDINARY_API_SECRET || '').trim()
 const cloudinaryFolder = String(process.env.CLOUDINARY_UPLOAD_FOLDER || 'gestor-notas-demo').trim()
+const cloudinaryUnsignedUploadPreset = String(
+  process.env.CLOUDINARY_UNSIGNED_UPLOAD_PRESET || ''
+).trim()
 const allowedOrigins = new Set(
   String(process.env.ALLOWED_ORIGINS || '')
     .split(',')
@@ -61,6 +64,13 @@ let notes = loadNotes()
 const validTokens = new Set()
 
 function useCloudinaryStorage() {
+  return Boolean(
+    cloudinaryCloudName &&
+      (cloudinaryUnsignedUploadPreset || (cloudinaryApiKey && cloudinaryApiSecret))
+  )
+}
+
+function useSignedCloudinaryStorage() {
   return Boolean(cloudinaryCloudName && cloudinaryApiKey && cloudinaryApiSecret)
 }
 
@@ -157,21 +167,26 @@ function signCloudinaryParams(params) {
 }
 
 async function uploadAttachmentToCloudinary(file, noteCode) {
-  const timestamp = Math.floor(Date.now() / 1000)
-  const publicId = buildCloudinaryPublicId(noteCode, file.originalname)
-  const signature = signCloudinaryParams({
-    folder: cloudinaryFolder,
-    public_id: publicId,
-    timestamp
-  })
-
   const form = new FormData()
   form.append('file', new Blob([file.buffer], { type: file.mimetype || 'application/pdf' }), file.originalname)
-  form.append('api_key', cloudinaryApiKey)
-  form.append('timestamp', String(timestamp))
-  form.append('folder', cloudinaryFolder)
-  form.append('public_id', publicId)
-  form.append('signature', signature)
+
+  if (cloudinaryUnsignedUploadPreset) {
+    form.append('upload_preset', cloudinaryUnsignedUploadPreset)
+  } else {
+    const timestamp = Math.floor(Date.now() / 1000)
+    const publicId = buildCloudinaryPublicId(noteCode, file.originalname)
+    const signature = signCloudinaryParams({
+      folder: cloudinaryFolder,
+      public_id: publicId,
+      timestamp
+    })
+
+    form.append('api_key', cloudinaryApiKey)
+    form.append('timestamp', String(timestamp))
+    form.append('folder', cloudinaryFolder)
+    form.append('public_id', publicId)
+    form.append('signature', signature)
+  }
 
   const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/raw/upload`, {
     method: 'POST',
@@ -195,7 +210,7 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
 }
 
 async function destroyCloudinaryAsset(publicId) {
-  if (!useCloudinaryStorage() || !publicId) {
+  if (!useSignedCloudinaryStorage() || !publicId) {
     return
   }
 

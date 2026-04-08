@@ -135,6 +135,7 @@ CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
+CLOUDINARY_UNSIGNED_UPLOAD_PRESET=
 ```
 
 `ALLOWED_ORIGINS` admite múltiples dominios separados por coma, por ejemplo:
@@ -149,8 +150,9 @@ Variables para adjuntos persistentes:
 - `CLOUDINARY_API_KEY`: API key del producto
 - `CLOUDINARY_API_SECRET`: API secret del producto
 - `CLOUDINARY_UPLOAD_FOLDER`: carpeta lógica para organizar uploads; por defecto `gestor-notas-demo`
+- `CLOUDINARY_UNSIGNED_UPLOAD_PRESET`: preset unsigned recomendado para demo pública; si está definido, el backend lo usa en lugar de firmar manualmente
 
-Si esas variables no están definidas, el backend conserva el fallback local para desarrollo, pero en producción la opción recomendada es configurar Cloudinary para evitar depender del filesystem efímero de Render.
+Si esas variables no están definidas, el backend conserva el fallback local para desarrollo. Para producción, la opción recomendada es configurar Cloudinary. Para esta demo pública, el camino más estable es usar `CLOUDINARY_UNSIGNED_UPLOAD_PRESET` y evitar la firma manual desde Render.
 
 ## API demo
 
@@ -212,11 +214,13 @@ CLOUDINARY_CLOUD_NAME=tu-cloud-name
 CLOUDINARY_API_KEY=tu-api-key
 CLOUDINARY_API_SECRET=tu-api-secret
 CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
+CLOUDINARY_UNSIGNED_UPLOAD_PRESET=tu-preset-unsigned
 ```
 
 Recomendación para demo pública:
 
 - configura Cloudinary antes de habilitar uploads de PDFs en producción
+- si quieres la vía más simple y estable, crea un preset unsigned en Cloudinary y usa `CLOUDINARY_UNSIGNED_UPLOAD_PRESET`
 - deja `PUBLIC_API_URL` con la URL final de Render
 - añade en `ALLOWED_ORIGINS` el dominio principal de Vercel que realmente usarás
 
