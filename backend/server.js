@@ -118,6 +118,20 @@ function sanitizeFilename(filename = 'adjunto-demo') {
   return `${normalizedBase || 'adjunto-demo'}${ext.toLowerCase()}`
 }
 
+function resolveAttachmentMimeType(filename = '', mimeType = '') {
+  const normalizedMimeType = String(mimeType || '').trim().toLowerCase()
+
+  if (normalizedMimeType && normalizedMimeType !== 'application/octet-stream') {
+    return normalizedMimeType
+  }
+
+  if (String(filename).toLowerCase().endsWith('.pdf')) {
+    return 'application/pdf'
+  }
+
+  return normalizedMimeType || 'application/octet-stream'
+}
+
 function createDemoNoteCode() {
   const maxNumber = notes.reduce((currentMax, note) => {
     const match = String(note.noteCode || '').match(/^DEMO-(\d+)$/)
@@ -169,7 +183,7 @@ function fileToDataUrl(file) {
     return ''
   }
 
-  const mimeType = file.mimetype || 'application/octet-stream'
+  const mimeType = resolveAttachmentMimeType(file.originalname, file.mimetype)
   return `data:${mimeType};base64,${file.buffer.toString('base64')}`
 }
 
@@ -224,7 +238,10 @@ app.get('/files/runtime/:noteCode/:fileName', (req, res, next) => {
     return
   }
 
-  res.setHeader('Content-Type', parsed.mimeType)
+  res.setHeader(
+    'Content-Type',
+    resolveAttachmentMimeType(attachment.name, attachment.mimeType || parsed.mimeType)
+  )
   res.setHeader(
     'Content-Disposition',
     `inline; filename="${sanitizeFilename(attachment.name || 'adjunto-demo.pdf')}"`
@@ -294,7 +311,7 @@ app.post('/note/', requireAuth, upload.single('attachment'), (req, res, next) =>
         ? [
             {
               name: req.file.originalname || 'adjunto-demo.pdf',
-              mimeType: req.file.mimetype || 'application/pdf',
+              mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
               dataUrl: fileToDataUrl(req.file)
             }
           ]
@@ -324,7 +341,7 @@ app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res
       ? [
           {
             name: req.file.originalname || 'adjunto-demo.pdf',
-            mimeType: req.file.mimetype || 'application/pdf',
+            mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
             dataUrl: fileToDataUrl(req.file)
           }
         ]
