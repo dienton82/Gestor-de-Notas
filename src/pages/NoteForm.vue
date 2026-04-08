@@ -29,7 +29,7 @@
             Seleccionar archivo
           </button>
           <span :class="styles.fileName">
-            {{ selectedFileName || 'Ningún archivo seleccionado' }}
+            {{ selectedFileName || currentAttachment?.name || 'Ningún archivo seleccionado' }}
           </span>
           <p v-if="currentAttachment && currentAttachmentLink?.href" :class="styles.currentAttachment">
             Adjunto actual:
@@ -83,7 +83,7 @@ const error = ref('')
 const currentAttachment = ref(null)
 const noteCode = route.params.noteCode
 const isEdit = Boolean(noteCode)
-const selectedFileName = computed(() => file.value?.name || currentAttachment.value?.name || '')
+const selectedFileName = computed(() => file.value?.name || '')
 const currentAttachmentLink = computed(() =>
   currentAttachment.value ? getAttachmentLinkAttributes(currentAttachment.value) : null
 )
@@ -96,7 +96,7 @@ onMounted(async () => {
 
     const { data } = await apiClient.get(`/note/${noteCode}`)
     content.value = data.contentText || data.content || ''
-    currentAttachment.value = data.attachments?.[0] || null
+    currentAttachment.value = data.attachments?.[0]?.url ? data.attachments[0] : null
   } catch (err) {
     const normalizedError = normalizeNotesError(err)
     error.value = normalizedError.message

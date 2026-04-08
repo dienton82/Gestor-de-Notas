@@ -78,16 +78,22 @@ function buildAttachmentUrl(req, attachment) {
     return `${buildApiBaseUrl(req)}/files/${String(attachment.path).replace(/^\/+/, '')}`
   }
 
+  if (attachment.url && /^https?:\/\//i.test(String(attachment.url))) {
+    return String(attachment.url)
+  }
+
   return ''
 }
 
 function serializeAttachment(req, attachment, noteCode) {
+  const url = buildAttachmentUrl(req, {
+    ...attachment,
+    noteCode
+  })
+
   return {
     name: attachment?.name || 'adjunto-demo',
-    url: buildAttachmentUrl(req, {
-      ...attachment,
-      noteCode
-    })
+    url
   }
 }
 
