@@ -1,11 +1,12 @@
 # Gestor de Notas
 
-Aplicación SPA desarrollada con Vue 3 para la gestión de notas personales. El proyecto mantiene la interfaz actual del frontend y añade una API demo mínima en Express para ofrecer una demo pública más estable, con autenticación básica, CRUD completo de notas y archivos PDF servidos como recursos estáticos reales.
+Aplicación SPA desarrollada con Vue 3 para la gestión de notas personales. El proyecto mantiene la interfaz actual del frontend y añade una API demo mínima en Express para ofrecer una demo pública más estable, con autenticación básica, CRUD completo de notas y adjuntos PDF persistidos mediante storage externo.
 
 ## Arquitectura
 
 - Frontend SPA con Vue 3, Vite, Pinia y Vue Router
 - Backend demo con Express para autenticación, notas y adjuntos
+- Cloudinary Storage para persistencia real de PDFs subidos
 - API externa opcional para desarrollo o integración real
 - Despliegue recomendado: frontend en Vercel y backend en Render o Railway
 
@@ -50,7 +51,7 @@ El formulario de acceso incluye credenciales precargadas para facilitar la revis
 - Ordenamiento por fecha
 - Paginación
 - Agrupación por fecha: Hoy, Ayer y Esta semana
-- Adjuntos PDF servidos desde backend demo
+- Adjuntos PDF persistidos y servidos desde backend demo
 - Interfaz responsive para escritorio y móvil
 
 ## Diseño e interfaz
@@ -130,6 +131,10 @@ Archivo recomendado: `backend/.env`
 PORT=4000
 PUBLIC_API_URL=http://localhost:4000
 ALLOWED_ORIGINS=http://localhost:5173
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 ```
 
 `ALLOWED_ORIGINS` admite múltiples dominios separados por coma, por ejemplo:
@@ -137,6 +142,15 @@ ALLOWED_ORIGINS=http://localhost:5173
 ```bash
 ALLOWED_ORIGINS=http://localhost:5173,https://tu-frontend.vercel.app
 ```
+
+Variables para adjuntos persistentes:
+
+- `CLOUDINARY_CLOUD_NAME`: nombre del cloud en Cloudinary
+- `CLOUDINARY_API_KEY`: API key del producto
+- `CLOUDINARY_API_SECRET`: API secret del producto
+- `CLOUDINARY_UPLOAD_FOLDER`: carpeta lógica para organizar uploads; por defecto `gestor-notas-demo`
+
+Si esas variables no están definidas, el backend conserva el fallback local para desarrollo, pero en producción la opción recomendada es configurar Cloudinary para evitar depender del filesystem efímero de Render.
 
 ## API demo
 
@@ -153,8 +167,9 @@ El backend demo expone estos endpoints:
 Características del backend demo:
 
 - usa datos semilla definidos en JSON
-- mantiene notas en memoria durante la ejecución
-- guarda nuevos adjuntos en `backend/public/uploads`
+- mantiene datos runtime para la demo durante la ejecución
+- persiste PDFs subidos en Cloudinary cuando las variables están configuradas
+- conserva un fallback local sólo para entornos sin storage externo
 - resuelve URLs de archivos con base en la URL pública del backend
 - permite CORS configurable para el frontend desplegado
 
@@ -193,7 +208,17 @@ Variables sugeridas:
 ```bash
 PUBLIC_API_URL=https://tu-backend-demo.onrender.com
 ALLOWED_ORIGINS=https://tu-frontend.vercel.app
+CLOUDINARY_CLOUD_NAME=tu-cloud-name
+CLOUDINARY_API_KEY=tu-api-key
+CLOUDINARY_API_SECRET=tu-api-secret
+CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 ```
+
+Recomendación para demo pública:
+
+- configura Cloudinary antes de habilitar uploads de PDFs en producción
+- deja `PUBLIC_API_URL` con la URL final de Render
+- añade en `ALLOWED_ORIGINS` el dominio principal de Vercel que realmente usarás
 
 ## Estructura del proyecto
 

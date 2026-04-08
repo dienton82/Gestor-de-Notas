@@ -1,5 +1,6 @@
 import cors from 'cors'
 import express from 'express'
+import crypto from 'crypto'
 import fs from 'fs'
 import multer from 'multer'
 import path from 'path'
@@ -13,6 +14,10 @@ const runtimeNotesFile = path.join(__dirname, 'data', 'runtime-notes.json')
 
 const app = express()
 const port = Number(process.env.PORT || 4000)
+const cloudinaryCloudName = String(process.env.CLOUDINARY_CLOUD_NAME || '').trim()
+const cloudinaryApiKey = String(process.env.CLOUDINARY_API_KEY || '').trim()
+const cloudinaryApiSecret = String(process.env.CLOUDINARY_API_SECRET || '').trim()
+const cloudinaryFolder = String(process.env.CLOUDINARY_UPLOAD_FOLDER || 'gestor-notas-demo').trim()
 const allowedOrigins = new Set(
   String(process.env.ALLOWED_ORIGINS || '')
     .split(',')
@@ -55,6 +60,10 @@ function loadNotes() {
 let notes = loadNotes()
 const validTokens = new Set()
 
+function useCloudinaryStorage() {
+  return Boolean(cloudinaryCloudName && cloudinaryApiKey && cloudinaryApiSecret)
+}
+
 function buildApiBaseUrl(req) {
   const explicitUrl = String(process.env.PUBLIC_API_URL || '').trim()
 
@@ -68,6 +77,10 @@ function buildApiBaseUrl(req) {
 function buildAttachmentUrl(req, attachment) {
   if (!attachment) {
     return ''
+  }
+
+  if (attachment.storage === 'cloudinary' && attachment.url) {
+    return String(attachment.url)
   }
 
   if (attachment.dataUrl && attachment.name && attachment.noteCode) {
@@ -124,6 +137,86 @@ function sanitizeFilename(filename = 'adjunto-demo') {
   return `${normalizedBase || 'adjunto-demo'}${ext.toLowerCase()}`
 }
 
+function buildCloudinaryPublicId(noteCode, filename) {
+  const safeFilename = sanitizeFilename(filename || 'adjunto-demo.pdf')
+  const baseName = path.basename(safeFilename)
+  return `${cloudinaryFolder}/${noteCode}-${Date.now()}-${baseName}`
+}
+
+function signCloudinaryParams(params) {
+  const serialized = Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&')
+
+  return crypto
+    .createHash('sha1')
+    .update(`${serialized}${cloudinaryApiSecret}`)
+    .digest('hex')
+}
+
+async function uploadAttachmentToCloudinary(file, noteCode) {
+  const timestamp = Math.floor(Date.now() / 1000)
+  const publicId = buildCloudinaryPublicId(noteCode, file.originalname)
+  const signature = signCloudinaryParams({
+    folder: cloudinaryFolder,
+    public_id: publicId,
+    timestamp
+  })
+
+  const form = new FormData()
+  form.append('file', new Blob([file.buffer], { type: file.mimetype || 'application/pdf' }), file.originalname)
+  form.append('api_key', cloudinaryApiKey)
+  form.append('timestamp', String(timestamp))
+  form.append('folder', cloudinaryFolder)
+  form.append('public_id', publicId)
+  form.append('signature', signature)
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/raw/upload`, {
+    method: 'POST',
+    body: form
+  })
+
+  if (!response.ok) {
+    const errorPayload = await response.text()
+    throw createHttpError(502, `No fue posible subir el adjunto a Cloudinary: ${errorPayload}`)
+  }
+
+  const payload = await response.json()
+
+  return {
+    name: file.originalname || 'adjunto-demo.pdf',
+    mimeType: resolveAttachmentMimeType(file.originalname, file.mimetype),
+    storage: 'cloudinary',
+    publicId: payload.public_id,
+    url: payload.secure_url
+  }
+}
+
+async function destroyCloudinaryAsset(publicId) {
+  if (!useCloudinaryStorage() || !publicId) {
+    return
+  }
+
+  const timestamp = Math.floor(Date.now() / 1000)
+  const signature = signCloudinaryParams({
+    public_id: publicId,
+    timestamp
+  })
+
+  const form = new FormData()
+  form.append('api_key', cloudinaryApiKey)
+  form.append('public_id', publicId)
+  form.append('timestamp', String(timestamp))
+  form.append('signature', signature)
+
+  await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/raw/destroy`, {
+    method: 'POST',
+    body: form
+  })
+}
+
 function resolveAttachmentMimeType(filename = '', mimeType = '') {
   const normalizedMimeType = String(mimeType || '').trim().toLowerCase()
 
@@ -153,6 +246,11 @@ function getFormValue(value, fallback = '') {
 }
 
 function removeAttachmentFile(attachment) {
+  if (attachment?.storage === 'cloudinary') {
+    void destroyCloudinaryAsset(attachment.publicId)
+    return
+  }
+
   if (!attachment?.path || !String(attachment.path).startsWith('uploads/')) {
     return
   }
@@ -301,11 +399,20 @@ app.get('/note/:noteCode', requireAuth, (req, res, next) => {
 })
 
 app.post('/note/', requireAuth, upload.single('attachment'), (req, res, next) => {
-  try {
+  ;(async () => {
     const createdAt = new Date().toISOString()
     const content = getFormValue(req.body?.content)
     const title = getFormValue(req.body?.title) || 'Nota demo'
     const noteCode = createDemoNoteCode()
+    const uploadedAttachment = req.file
+      ? useCloudinaryStorage()
+        ? await uploadAttachmentToCloudinary(req.file, noteCode)
+        : {
+            name: req.file.originalname || 'adjunto-demo.pdf',
+            mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
+            dataUrl: fileToDataUrl(req.file)
+          }
+      : null
 
     const note = {
       noteCode,
@@ -313,27 +420,19 @@ app.post('/note/', requireAuth, upload.single('attachment'), (req, res, next) =>
       content,
       contentText: content,
       createdAt,
-      attachments: req.file
-        ? [
-            {
-              name: req.file.originalname || 'adjunto-demo.pdf',
-              mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
-              dataUrl: fileToDataUrl(req.file)
-            }
-          ]
-        : []
+      attachments: uploadedAttachment ? [uploadedAttachment] : []
     }
 
     notes.unshift(note)
     writeRuntimeNotes(notes)
     res.status(201).json(serializeNote(req, note))
-  } catch (error) {
+  })().catch(error => {
     next(error)
-  }
+  })
 })
 
 app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res, next) => {
-  try {
+  ;(async () => {
     const index = notes.findIndex(item => item.noteCode === req.params.noteCode)
 
     if (index === -1) {
@@ -345,11 +444,13 @@ app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res
     const title = getFormValue(req.body?.title, existing.title || existing.noteCode)
     const attachments = req.file
       ? [
-          {
-            name: req.file.originalname || 'adjunto-demo.pdf',
-            mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
-            dataUrl: fileToDataUrl(req.file)
-          }
+          useCloudinaryStorage()
+            ? await uploadAttachmentToCloudinary(req.file, existing.noteCode)
+            : {
+                name: req.file.originalname || 'adjunto-demo.pdf',
+                mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
+                dataUrl: fileToDataUrl(req.file)
+              }
         ]
       : existing.attachments || []
 
@@ -368,9 +469,9 @@ app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res
     notes.splice(index, 1, updated)
     writeRuntimeNotes(notes)
     res.json(serializeNote(req, updated))
-  } catch (error) {
+  })().catch(error => {
     next(error)
-  }
+  })
 })
 
 app.delete('/note/:noteCode', requireAuth, (req, res, next) => {
