@@ -8,11 +8,8 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const publicDir = path.join(__dirname, 'public')
-const uploadsDir = path.join(publicDir, 'uploads')
 const seedNotesFile = path.join(__dirname, 'data', 'demo-notes.json')
 const runtimeNotesFile = path.join(__dirname, 'data', 'runtime-notes.json')
-
-fs.mkdirSync(uploadsDir, { recursive: true })
 
 const app = express()
 const port = Number(process.env.PORT || 4000)
@@ -69,17 +66,28 @@ function buildApiBaseUrl(req) {
 }
 
 function buildAttachmentUrl(req, attachment) {
-  if (!attachment?.path) {
+  if (!attachment) {
     return ''
   }
 
-  return `${buildApiBaseUrl(req)}/files/${String(attachment.path).replace(/^\/+/, '')}`
+  if (attachment.dataUrl && attachment.name && attachment.noteCode) {
+    return `${buildApiBaseUrl(req)}/files/runtime/${attachment.noteCode}/${encodeURIComponent(attachment.name)}`
+  }
+
+  if (attachment.path) {
+    return `${buildApiBaseUrl(req)}/files/${String(attachment.path).replace(/^\/+/, '')}`
+  }
+
+  return ''
 }
 
-function serializeAttachment(req, attachment) {
+function serializeAttachment(req, attachment, noteCode) {
   return {
     name: attachment?.name || 'adjunto-demo',
-    url: buildAttachmentUrl(req, attachment)
+    url: buildAttachmentUrl(req, {
+      ...attachment,
+      noteCode
+    })
   }
 }
 
@@ -87,7 +95,7 @@ function serializeNote(req, note) {
   return {
     ...note,
     attachments: Array.isArray(note.attachments)
-      ? note.attachments.map(attachment => serializeAttachment(req, attachment))
+      ? note.attachments.map(attachment => serializeAttachment(req, attachment, note.noteCode))
       : []
   }
 }
@@ -149,23 +157,34 @@ function requireAuth(req, _res, next) {
   next()
 }
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadsDir)
-  },
-  filename: (_req, file, cb) => {
-    const timestamp = Date.now()
-    const filename = `${timestamp}-${sanitizeFilename(file.originalname)}`
-    cb(null, filename)
-  }
-})
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024
   }
 })
+
+function fileToDataUrl(file) {
+  if (!file?.buffer) {
+    return ''
+  }
+
+  const mimeType = file.mimetype || 'application/octet-stream'
+  return `data:${mimeType};base64,${file.buffer.toString('base64')}`
+}
+
+function parseDataUrl(dataUrl) {
+  const match = String(dataUrl || '').match(/^data:([^;]+);base64,(.+)$/)
+
+  if (!match) {
+    return null
+  }
+
+  return {
+    mimeType: match[1],
+    buffer: Buffer.from(match[2], 'base64')
+  }
+}
 
 app.use(
   cors({
@@ -182,6 +201,36 @@ app.use(
 
 app.use(express.json())
 app.use('/files', express.static(publicDir, { maxAge: '1d' }))
+
+app.get('/files/runtime/:noteCode/:fileName', (req, res, next) => {
+  const note = notes.find(item => item.noteCode === req.params.noteCode)
+
+  if (!note) {
+    next(createHttpError(404, 'Archivo no encontrado'))
+    return
+  }
+
+  const attachment = (note.attachments || []).find(item => item.name === req.params.fileName)
+
+  if (!attachment?.dataUrl) {
+    next(createHttpError(404, 'Archivo no encontrado'))
+    return
+  }
+
+  const parsed = parseDataUrl(attachment.dataUrl)
+
+  if (!parsed) {
+    next(createHttpError(500, 'El archivo adjunto no tiene un formato válido'))
+    return
+  }
+
+  res.setHeader('Content-Type', parsed.mimeType)
+  res.setHeader(
+    'Content-Disposition',
+    `inline; filename="${sanitizeFilename(attachment.name || 'adjunto-demo.pdf')}"`
+  )
+  res.send(parsed.buffer)
+})
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true })
@@ -244,8 +293,9 @@ app.post('/note/', requireAuth, upload.single('attachment'), (req, res, next) =>
       attachments: req.file
         ? [
             {
-              name: req.file.originalname || req.file.filename,
-              path: `uploads/${req.file.filename}`
+              name: req.file.originalname || 'adjunto-demo.pdf',
+              mimeType: req.file.mimetype || 'application/pdf',
+              dataUrl: fileToDataUrl(req.file)
             }
           ]
         : []
@@ -273,8 +323,9 @@ app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res
     const attachments = req.file
       ? [
           {
-            name: req.file.originalname || req.file.filename,
-            path: `uploads/${req.file.filename}`
+            name: req.file.originalname || 'adjunto-demo.pdf',
+            mimeType: req.file.mimetype || 'application/pdf',
+            dataUrl: fileToDataUrl(req.file)
           }
         ]
       : existing.attachments || []
