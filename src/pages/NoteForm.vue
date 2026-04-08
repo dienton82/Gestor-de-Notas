@@ -67,9 +67,10 @@ const content = ref('')
 const file = ref(null)
 const fileInputRef = ref(null)
 const error = ref('')
+const currentAttachmentName = ref('')
 const noteCode = route.params.noteCode
 const isEdit = Boolean(noteCode)
-const selectedFileName = computed(() => file.value?.name || '')
+const selectedFileName = computed(() => file.value?.name || currentAttachmentName.value || '')
 
 onMounted(async () => {
   try {
@@ -79,6 +80,7 @@ onMounted(async () => {
 
     const { data } = await apiClient.get(`/note/${noteCode}`)
     content.value = data.contentText || data.content || ''
+    currentAttachmentName.value = data.attachments?.[0]?.name || ''
   } catch (err) {
     const normalizedError = normalizeNotesError(err)
     error.value = normalizedError.message
