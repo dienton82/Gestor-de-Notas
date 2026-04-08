@@ -11,7 +11,7 @@ function clone(value) {
 
 function normalizeAttachments(attachments = []) {
   return attachments.map(attachment => {
-    if (attachment?.name === 'brief-demo.pdf' && (!attachment.url || attachment.url === '#')) {
+    if (attachment?.name === 'brief-demo.pdf') {
       return {
         ...attachment,
         url: getPublicAssetUrl('demo/brief-demo.pdf')
