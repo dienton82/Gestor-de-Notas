@@ -1,71 +1,61 @@
 # Gestor de Notas
 
-Aplicación SPA desarrollada con Vue 3 para la gestión de notas personales. El proyecto mantiene la interfaz actual del frontend y añade una API demo mínima en Express para ofrecer una demo pública más estable, con autenticación básica, CRUD completo de notas y adjuntos PDF persistidos mediante storage externo.
+Aplicacion SPA de gestion de notas personales construida con Vue 3, Vite y Pinia. Incluye backend demo en Express con autenticacion, CRUD completo y adjuntos PDF persistidos en Cloudinary.
+
+**Demo publica:** [https://gestor-notas-topaz.vercel.app](https://gestor-notas-topaz.vercel.app)
+
+---
 
 ## Arquitectura
 
-- Frontend SPA con Vue 3, Vite, Pinia y Vue Router
-- Backend demo con Express para autenticación, notas y adjuntos
-- Cloudinary Storage para persistencia real de PDFs subidos
-- API externa opcional para desarrollo o integración real
-- Despliegue recomendado: frontend en Vercel y backend en Render o Railway
+| Capa | Tecnologia | Hosting |
+|------|-----------|---------|
+| Frontend SPA | Vue 3 + Vite + Pinia + Vue Router | Vercel |
+| Backend API | Express + Multer | Render |
+| Storage de archivos | Cloudinary (raw/upload, preset unsigned) | Cloudinary |
 
-## Demo
+El frontend se comunica con el backend via REST. Los PDFs adjuntos se suben desde el backend a Cloudinary y se almacenan como recursos `raw`. La URL publica resultante se guarda en la nota y se sirve directamente al navegador.
 
-Demo pública actual:
+---
 
-`https://dienton82.github.io/Gestor-de-Notas/`
-
-Arquitectura recomendada para demo estable:
-
-- frontend desplegado en Vercel
-- backend demo desplegado en Render o Railway
-
-El formulario de acceso incluye credenciales precargadas para facilitar la revisión del flujo. Si se usa el backend demo, cualquier correo y contraseña no vacíos permiten entrar a la aplicación.
-
-## Tecnologías
+## Stack tecnico
 
 ### Frontend
 
-- Vue 3
+- Vue 3 (Composition API + Options API)
 - Vite
-- Pinia
-- Vue Router
+- Pinia (state management)
+- Vue Router (SPA con history mode)
 - Axios
 - CSS Modules
-- lucide-vue-next
+- lucide-vue-next (iconografia)
 
-### Backend demo
+### Backend
 
-- Node.js
-- Express
-- CORS
-- Multer
+- Node.js 18+
+- Express 4
+- Multer (upload en memoria)
+- Cloudinary API (raw upload via data URI base64)
+- CORS configurable
+
+---
 
 ## Funcionalidades
 
-- Autenticación de usuario con soporte de entorno demo
-- CRUD completo de notas
-- Edición inline en escritorio
-- Búsqueda por título o contenido
+- Autenticacion demo (cualquier correo y contrasena no vacios)
+- Creacion, lectura, edicion y eliminacion de notas
+- Edicion inline con doble clic en escritorio
+- Busqueda por titulo o contenido
 - Ordenamiento por fecha
-- Paginación
-- Agrupación por fecha: Hoy, Ayer y Esta semana
-- Adjuntos PDF persistidos y servidos desde backend demo
-- Interfaz responsive para escritorio y móvil
+- Paginacion
+- Agrupacion temporal: Hoy, Ayer, Esta semana
+- Adjuntos PDF con persistencia real en Cloudinary
+- Visualizacion directa de PDF en el navegador (sin descarga)
+- Interfaz responsive para escritorio y movil
 
-## Diseño e interfaz
+---
 
-La UI sigue una línea visual moderna y sobria basada en escalas de grises con amarillo como color de acento. El sistema visual prioriza legibilidad, contraste y consistencia entre formularios, acciones, tarjetas y estados interactivos.
-
-La personalización incluye:
-
-- botones primarios, secundarios y de acción con estilo consistente
-- inputs, file input y dropdowns personalizados
-- eliminación de estilos nativos del navegador cuando afectaban la experiencia
-- tarjetas y contenedores con jerarquía visual clara
-
-## Ejecución local
+## Ejecucion local
 
 ### 1. Instalar dependencias
 
@@ -74,9 +64,9 @@ npm install
 npm --prefix backend install
 ```
 
-### 2. Ejecutar frontend y backend demo
+### 2. Ejecutar
 
-Backend demo:
+Backend:
 
 ```bash
 npm run dev:backend
@@ -88,180 +78,156 @@ Frontend:
 npm run dev
 ```
 
-Por defecto, el frontend en producción usa el modo `demo` y en desarrollo usa el modo `real`. Si quieres trabajar localmente contra el backend demo, define `VITE_API_MODE=demo`.
-
-### 3. Build del frontend
+### 3. Build de produccion
 
 ```bash
 npm run build
 ```
 
+---
+
 ## Variables de entorno
 
-### Frontend
-
-Archivo recomendado: `.env`
+### Frontend (.env)
 
 ```bash
 VITE_API_MODE=demo
-VITE_API_URL=https://stg.prolibu.com/v2
 VITE_DEMO_API_URL=http://localhost:4000
-VITE_USE_API_PROXY=false
-VITE_API_PROXY_TARGET=https://stg.prolibu.com
 VITE_APP_BASE_PATH=/
 ```
 
-Valores admitidos para `VITE_API_MODE`:
+Valores de `VITE_API_MODE`:
 
-- `real`: usa la API externa
-- `demo`: usa el backend Express
-- `mock`: usa el mock local del frontend como fallback
+| Valor | Comportamiento |
+|-------|---------------|
+| `demo` | Usa el backend Express (produccion y desarrollo) |
+| `real` | Usa API externa configurable |
+| `mock` | Usa mock local del frontend |
 
-Notas:
-
-- para Vercel, `VITE_APP_BASE_PATH=/`
-- para GitHub Pages, `VITE_APP_BASE_PATH=/Gestor-de-Notas/`
-- el proxy de Vite sólo aplica cuando `VITE_API_MODE=real`
-
-### Backend
-
-Archivo recomendado: `backend/.env`
+### Backend (backend/.env)
 
 ```bash
 PORT=4000
 PUBLIC_API_URL=http://localhost:4000
 ALLOWED_ORIGINS=http://localhost:5173
 CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 CLOUDINARY_UNSIGNED_UPLOAD_PRESET=
+CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 ```
 
-`ALLOWED_ORIGINS` admite múltiples dominios separados por coma, por ejemplo:
+| Variable | Descripcion |
+|----------|------------|
+| `PORT` | Puerto del servidor Express |
+| `PUBLIC_API_URL` | URL publica del backend (para construir URLs de archivos) |
+| `ALLOWED_ORIGINS` | Dominios permitidos por CORS, separados por coma |
+| `CLOUDINARY_CLOUD_NAME` | Nombre del cloud en Cloudinary |
+| `CLOUDINARY_UNSIGNED_UPLOAD_PRESET` | Preset unsigned para subida de PDFs |
+| `CLOUDINARY_UPLOAD_FOLDER` | Carpeta logica en Cloudinary para organizar uploads |
 
-```bash
-ALLOWED_ORIGINS=http://localhost:5173,https://tu-frontend.vercel.app
-```
+Si las variables de Cloudinary no estan definidas, el backend usa un fallback local (no persistente entre reinicios).
 
-Variables para adjuntos persistentes:
+---
 
-- `CLOUDINARY_CLOUD_NAME`: nombre del cloud en Cloudinary
-- `CLOUDINARY_API_KEY`: API key del producto
-- `CLOUDINARY_API_SECRET`: API secret del producto
-- `CLOUDINARY_UPLOAD_FOLDER`: carpeta lógica para organizar uploads; por defecto `gestor-notas-demo`
-- `CLOUDINARY_UNSIGNED_UPLOAD_PRESET`: preset unsigned recomendado para demo pública; si está definido, el backend lo usa en lugar de firmar manualmente
-
-Si esas variables no están definidas, el backend conserva el fallback local para desarrollo. Para producción, la opción recomendada es configurar Cloudinary. Para esta demo pública, el camino más estable es usar `CLOUDINARY_UNSIGNED_UPLOAD_PRESET` y evitar la firma manual desde Render.
-
-## API demo
-
-El backend demo expone estos endpoints:
-
-- `POST /auth/signin`
-- `GET /note/`
-- `GET /note/:noteCode`
-- `POST /note/`
-- `PATCH /note/:noteCode`
-- `DELETE /note/:noteCode`
-- `GET /files/demo/brief-demo.pdf`
-
-Características del backend demo:
-
-- usa datos semilla definidos en JSON
-- mantiene datos runtime para la demo durante la ejecución
-- persiste PDFs subidos en Cloudinary cuando las variables están configuradas
-- conserva un fallback local sólo para entornos sin storage externo
-- resuelve URLs de archivos con base en la URL pública del backend
-- permite CORS configurable para el frontend desplegado
-
-## Despliegue recomendado
+## Despliegue
 
 ### Frontend en Vercel
 
-Configura:
+| Campo | Valor |
+|-------|-------|
+| Framework preset | Vite |
+| Build command | `npm run build` |
+| Output directory | `dist` |
 
-- framework preset: `Vite`
-- build command: `npm run build`
-- output directory: `dist`
-
-Variables sugeridas en Vercel:
+Variables en Vercel:
 
 ```bash
 VITE_API_MODE=demo
-VITE_DEMO_API_URL=https://tu-backend-demo.onrender.com
+VITE_DEMO_API_URL=https://gestor-de-notas-8h9n.onrender.com
 VITE_APP_BASE_PATH=/
 ```
 
-El archivo `vercel.json` incluye un rewrite a `index.html` para soportar Vue Router en modo SPA.
+### Backend en Render
 
-### Backend en Render o Railway
+| Campo | Valor |
+|-------|-------|
+| Root directory | `backend` |
+| Build command | `npm install` |
+| Start command | `npm start` |
 
-Usa la carpeta `backend/` como servicio Node.js.
-
-Configuración mínima:
-
-- install command: `npm install`
-- start command: `npm start`
-- root directory: `backend`
-
-Variables sugeridas:
+Variables en Render:
 
 ```bash
-PUBLIC_API_URL=https://tu-backend-demo.onrender.com
-ALLOWED_ORIGINS=https://tu-frontend.vercel.app
-CLOUDINARY_CLOUD_NAME=tu-cloud-name
-CLOUDINARY_API_KEY=tu-api-key
-CLOUDINARY_API_SECRET=tu-api-secret
+PORT=4000
+PUBLIC_API_URL=https://gestor-de-notas-8h9n.onrender.com
+ALLOWED_ORIGINS=https://gestor-notas-topaz.vercel.app
+CLOUDINARY_CLOUD_NAME=dneam8g56
+CLOUDINARY_UNSIGNED_UPLOAD_PRESET=gestor-notas-demo-pdf
 CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
-CLOUDINARY_UNSIGNED_UPLOAD_PRESET=tu-preset-unsigned
 ```
 
-Recomendación para demo pública:
+### Configuracion requerida en Cloudinary
 
-- configura Cloudinary antes de habilitar uploads de PDFs en producción
-- si quieres la vía más simple y estable, crea un preset unsigned en Cloudinary y usa `CLOUDINARY_UNSIGNED_UPLOAD_PRESET`
-- deja `PUBLIC_API_URL` con la URL final de Render
-- añade en `ALLOWED_ORIGINS` el dominio principal de Vercel que realmente usarás
+Para que los PDFs se visualicen correctamente:
+
+1. Crear un **Upload Preset** con modo **Unsigned** y delivery type **Upload** (no Authenticated)
+2. En **Settings > Security**, activar **"Allow delivery of PDF and ZIP files"**
+3. Verificar que **Strict transformations** este deshabilitado
+
+---
+
+## API demo
+
+| Metodo | Endpoint | Descripcion |
+|--------|----------|------------|
+| POST | `/auth/signin` | Login (cualquier credencial no vacia) |
+| GET | `/note/` | Listar notas |
+| GET | `/note/:noteCode` | Obtener nota individual |
+| POST | `/note/` | Crear nota (soporta FormData con adjunto) |
+| PATCH | `/note/:noteCode` | Actualizar nota |
+| DELETE | `/note/:noteCode` | Eliminar nota |
+| GET | `/health` | Health check |
+
+---
 
 ## Estructura del proyecto
 
-```text
-Gestor-de-Notas/
-├── backend/
-│   ├── data/        # Datos semilla para la demo
-│   ├── public/      # PDFs demo y uploads servidos por Express
-│   ├── server.js    # API demo mínima
-│   └── package.json
-├── public/          # Assets del frontend y fallback mock
-├── src/
-│   ├── api/         # Cliente HTTP
-│   ├── components/  # Componentes reutilizables
-│   ├── config/      # Estrategia de entornos y URLs
-│   ├── mocks/       # Fallback mock local del frontend
-│   ├── pages/       # Vistas principales
-│   ├── router/      # Rutas y guards
-│   ├── stores/      # Estado global con Pinia
-│   ├── utils/       # Helpers de errores, seguridad y adjuntos
-│   └── main.js
-├── package.json
-├── README.md
-├── vercel.json
-└── vite.config.js
 ```
+gestor-notas/
+  backend/
+    data/          Datos semilla y runtime
+    public/        PDFs demo estaticos
+    server.js      API Express
+    package.json
+  src/
+    api/           Cliente HTTP (Axios)
+    components/    Componentes reutilizables
+    config/        Configuracion de entornos y URLs
+    layouts/       Layouts de autenticacion y principal
+    mocks/         Fallback mock local
+    pages/         Vistas principales
+    router/        Rutas y guards de navegacion
+    stores/        Estado global (Pinia)
+    utils/         Helpers de seguridad, errores y adjuntos
+    main.js        Entry point
+  vercel.json      Rewrite para SPA
+  vite.config.js   Configuracion de Vite
+```
+
+---
 
 ## Credenciales de acceso
 
 Valores precargados en la pantalla de login:
 
-```txt
+```
 Email:    test.user4@prolibu.com
 Password: Prolibu2025!
 ```
 
-En el backend demo se permite cualquier correo y contraseña no vacíos.
+En el backend demo se permite cualquier correo y contrasena no vacios.
+
+---
 
 ## Licencia
 
-Este proyecto está bajo la licencia MIT.  
-© 2025 [dienton82](https://github.com/dienton82)
+MIT -- [dienton82](https://github.com/dienton82)
