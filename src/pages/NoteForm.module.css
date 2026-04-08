@@ -114,6 +114,23 @@
   line-height: 1.4;
 }
 
+.currentAttachment {
+  margin: 0;
+  color: var(--app-text-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.currentAttachmentLink {
+  color: var(--app-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.currentAttachmentLink:hover {
+  text-decoration: underline;
+}
+
 .textarea {
   min-height: 156px;
   resize: vertical;

@@ -31,6 +31,18 @@
           <span :class="styles.fileName">
             {{ selectedFileName || 'Ningún archivo seleccionado' }}
           </span>
+          <p v-if="currentAttachment && currentAttachmentLink?.href" :class="styles.currentAttachment">
+            Adjunto actual:
+            <a
+              :href="currentAttachmentLink.href"
+              :target="currentAttachmentLink.target"
+              :rel="currentAttachmentLink.rel"
+              :download="currentAttachmentLink.download"
+              :class="styles.currentAttachmentLink"
+            >
+              {{ currentAttachment.name }}
+            </a>
+          </p>
         </div>
       </div>
 
@@ -55,6 +67,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
 import apiClient from '../api/client'
+import { getAttachmentLinkAttributes } from '../utils/attachments'
 import { normalizeNotesError } from '../utils/http'
 import styles from './NoteForm.module.css'
 
@@ -67,10 +80,13 @@ const content = ref('')
 const file = ref(null)
 const fileInputRef = ref(null)
 const error = ref('')
-const currentAttachmentName = ref('')
+const currentAttachment = ref(null)
 const noteCode = route.params.noteCode
 const isEdit = Boolean(noteCode)
-const selectedFileName = computed(() => file.value?.name || currentAttachmentName.value || '')
+const selectedFileName = computed(() => file.value?.name || currentAttachment.value?.name || '')
+const currentAttachmentLink = computed(() =>
+  currentAttachment.value ? getAttachmentLinkAttributes(currentAttachment.value) : null
+)
 
 onMounted(async () => {
   try {
@@ -80,7 +96,7 @@ onMounted(async () => {
 
     const { data } = await apiClient.get(`/note/${noteCode}`)
     content.value = data.contentText || data.content || ''
-    currentAttachmentName.value = data.attachments?.[0]?.name || ''
+    currentAttachment.value = data.attachments?.[0] || null
   } catch (err) {
     const normalizedError = normalizeNotesError(err)
     error.value = normalizedError.message
