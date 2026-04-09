@@ -15,6 +15,7 @@
             :target="attachmentLink(a).target"
             :rel="attachmentLink(a).rel"
             :download="attachmentLink(a).download"
+            @click="handleAttachmentClick($event, a)"
           >
             <Paperclip :size="14" /> {{ a.name }}
           </a>
@@ -30,7 +31,7 @@ import { Paperclip } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import apiClient from '../api/client'
-import { getAttachmentLinkAttributes } from '../utils/attachments'
+import { getAttachmentLinkAttributes, openAttachment } from '../utils/attachments'
 import { normalizeNotesError } from '../utils/http'
 
 const route = useRoute()
@@ -63,6 +64,10 @@ onMounted(async () => {
 
 function attachmentLink(attachment) {
   return getAttachmentLinkAttributes(attachment)
+}
+
+function handleAttachmentClick(event, attachment) {
+  openAttachment(event, attachment)
 }
 </script>
 

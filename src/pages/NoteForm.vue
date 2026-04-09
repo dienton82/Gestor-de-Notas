@@ -39,6 +39,7 @@
               :rel="currentAttachmentLink.rel"
               :download="currentAttachmentLink.download"
               :class="styles.currentAttachmentLink"
+              @click="handleAttachmentClick($event, currentAttachment)"
             >
               {{ currentAttachment.name }}
             </a>
@@ -67,7 +68,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotesStore } from '../stores/notes'
 import apiClient from '../api/client'
-import { getAttachmentLinkAttributes } from '../utils/attachments'
+import { getAttachmentLinkAttributes, openAttachment } from '../utils/attachments'
 import { normalizeNotesError } from '../utils/http'
 import styles from './NoteForm.module.css'
 
@@ -87,6 +88,10 @@ const selectedFileName = computed(() => file.value?.name || '')
 const currentAttachmentLink = computed(() =>
   currentAttachment.value ? getAttachmentLinkAttributes(currentAttachment.value) : null
 )
+
+function handleAttachmentClick(event, attachment) {
+  openAttachment(event, attachment)
+}
 
 onMounted(async () => {
   try {

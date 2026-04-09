@@ -16,6 +16,7 @@
           :rel="attachmentLink(a).rel"
           :download="attachmentLink(a).download"
           :class="styles.attachLink"
+          @click="handleAttachmentClick($event, a)"
         ><Paperclip :size="14" /> {{ a.name }}</a>
       </li>
     </ul>
@@ -25,7 +26,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Paperclip, PencilLine } from 'lucide-vue-next'
-import { getAttachmentLinkAttributes } from '../utils/attachments'
+import { getAttachmentLinkAttributes, openAttachment } from '../utils/attachments'
 import styles from './NoteCard.module.css'
 
 const props = defineProps({
@@ -47,5 +48,9 @@ const excerpt = computed(() => {
 
 function attachmentLink(attachment) {
   return getAttachmentLinkAttributes(attachment)
+}
+
+function handleAttachmentClick(event, attachment) {
+  openAttachment(event, attachment)
 }
 </script>
