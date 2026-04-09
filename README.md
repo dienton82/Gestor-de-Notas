@@ -1,8 +1,49 @@
 # Gestor de Notas
 
-Aplicacion SPA de gestion de notas personales construida con Vue 3, Vite y Pinia. Incluye backend demo en Express con autenticacion, CRUD completo y adjuntos PDF persistidos en Cloudinary.
+Aplicacion web SPA para la gestion de notas personales con soporte de adjuntos PDF. Construida con Vue 3, Vite y Pinia en el frontend, y un backend Express desplegado de forma independiente. Los archivos adjuntos se persisten en Cloudinary, lo que permite mantener el almacenamiento entre reinicios del servidor sin depender del filesystem efimero del hosting.
 
 **Demo publica:** [https://gestor-notas-topaz.vercel.app](https://gestor-notas-topaz.vercel.app)
+
+---
+
+## Tecnologias utilizadas
+
+### Frontend
+
+- Vue 3 (Composition API)
+- Vite 6
+- Pinia (estado global)
+- Vue Router (hash mode)
+- Axios (cliente HTTP)
+- CSS Modules (estilos por componente)
+- vue-toastification (notificaciones)
+- lucide-vue-next (iconografia)
+
+### Backend
+
+- Node.js 18+
+- Express 4
+- Multer (upload en memoria)
+- Cloudinary API (raw upload, unsigned preset, codificacion base64)
+- CORS configurable por variable de entorno
+
+---
+
+## Funcionalidades principales
+
+- CRUD completo de notas (crear, leer, editar, eliminar)
+- Edicion inline con doble clic en escritorio
+- Navegacion a formulario completo en dispositivos moviles
+- Busqueda por titulo o contenido
+- Ordenamiento por fecha de creacion
+- Paginacion con controles de navegacion
+- Agrupacion temporal: Hoy, Ayer, Esta semana, Anteriores
+- Adjuntos PDF con persistencia real en Cloudinary
+- Visualizacion directa de PDF en el navegador (sin forzar descarga)
+- Descarga de adjuntos cuando corresponde
+- Autenticacion demo (cualquier correo y contrasena no vacios)
+- Modo demo / modo mock como fallback cuando el backend no esta disponible
+- UI responsive optimizada para escritorio y movil
 
 ---
 
@@ -11,60 +52,104 @@ Aplicacion SPA de gestion de notas personales construida con Vue 3, Vite y Pinia
 | Capa | Tecnologia | Hosting |
 |------|-----------|---------|
 | Frontend SPA | Vue 3 + Vite + Pinia + Vue Router | Vercel |
-| Backend API | Express + Multer | Render |
-| Storage de archivos | Cloudinary (raw/upload, preset unsigned) | Cloudinary |
+| Backend API | Express 4 + Multer | Render |
+| Almacenamiento de archivos | Cloudinary (raw/upload, preset unsigned) | Cloudinary |
 
-El frontend se comunica con el backend via REST. Los PDFs adjuntos se suben desde el backend a Cloudinary y se almacenan como recursos `raw`. La URL publica resultante se guarda en la nota y se sirve directamente al navegador.
+El frontend se comunica con el backend a traves de una API REST. Cuando el usuario sube un PDF, el archivo llega al backend a traves de Multer (almacenamiento en memoria), se convierte a un data URI en base64 y se envia a Cloudinary como recurso de tipo `raw`. La URL publica resultante se almacena junto con la nota y se entrega directamente al navegador del usuario.
 
----
-
-## Stack tecnico
-
-### Frontend
-
-- Vue 3 (Composition API + Options API)
-- Vite
-- Pinia (state management)
-- Vue Router (SPA con history mode)
-- Axios
-- CSS Modules
-- lucide-vue-next (iconografia)
-
-### Backend
-
-- Node.js 18+
-- Express 4
-- Multer (upload en memoria)
-- Cloudinary API (raw upload via data URI base64)
-- CORS configurable
+Si el backend no esta disponible o las variables de Cloudinary no estan configuradas, el sistema puede operar en modo mock local (sin persistencia de archivos entre sesiones).
 
 ---
 
-## Funcionalidades
+## Manejo de adjuntos PDF
 
-- Autenticacion demo (cualquier correo y contrasena no vacios)
-- Creacion, lectura, edicion y eliminacion de notas
-- Edicion inline con doble clic en escritorio
-- Busqueda por titulo o contenido
-- Ordenamiento por fecha
-- Paginacion
-- Agrupacion temporal: Hoy, Ayer, Esta semana
-- Adjuntos PDF con persistencia real en Cloudinary
-- Visualizacion directa de PDF en el navegador (sin descarga)
-- Interfaz responsive para escritorio y movil
+El flujo de subida de archivos sigue estos pasos:
+
+1. El usuario selecciona un PDF desde el formulario de creacion o edicion de notas.
+2. El frontend envia el archivo como `FormData` (sin header `Content-Type` explicito para que Axios genere el boundary correcto).
+3. El backend recibe el archivo con Multer en modo memoria.
+4. El buffer del archivo se codifica como data URI base64 (`data:application/pdf;base64,...`).
+5. Se construye un `FormData` con el data URI, el `upload_preset` unsigned y la carpeta de destino.
+6. Se envia a la API de Cloudinary como recurso `raw`.
+7. La URL publica (`secure_url`) se asocia a la nota.
+
+Para la visualizacion, los enlaces apuntan directamente a la URL de Cloudinary con `target="_blank"` y `rel="noopener noreferrer"`, lo que permite que el navegador renderice el PDF de forma nativa.
 
 ---
 
-## Ejecucion local
+## Compatibilidad y correcciones en dispositivos moviles
 
-### 1. Instalar dependencias
+### Problema original
+
+En dispositivos Android, los enlaces a PDFs externos con `target="_blank"` presentaban un comportamiento inconsistente: en algunos navegadores el enlace no se abria, o el sistema lo bloqueaba silenciosamente sin dar feedback al usuario. Esto afectaba directamente la funcionalidad principal de visualizacion de adjuntos.
+
+### Causa
+
+Los navegadores moviles (especialmente Chrome en Android) pueden bloquear o ignorar la apertura de nuevas pestanas cuando el clic se procesa de forma asincrona o cuando el atributo `target="_blank"` no se maneja dentro del contexto de un gesto directo del usuario. El comportamiento varia segun el dispositivo, la version del navegador y la politica de popups.
+
+### Solucion implementada
+
+Se agrego un handler de clic programatico en todos los componentes que renderizan enlaces a PDF (`NoteCard`, `NoteDetail`, `NoteForm`). En dispositivos moviles (detectados via `navigator.userAgent`), el handler intercepta el evento del enlace y ejecuta `window.open(href, '_blank', 'noopener,noreferrer')` de forma sincrona dentro del gesto del usuario:
+
+```js
+export function openAttachment(event, attachment) {
+  if (!isMobileDevice()) return
+
+  const href = sanitizeExternalUrl(attachment?.url || '')
+  if (!href || href.startsWith('data:') || href.startsWith('blob:')) return
+
+  event.preventDefault()
+  window.open(href, '_blank', 'noopener,noreferrer')
+}
+```
+
+En escritorio, el handler no interviene y el enlace funciona de forma nativa.
+
+### Resultado
+
+Los PDFs se abren correctamente en Android y iOS sin ser bloqueados, manteniendo el mismo comportamiento estable en navegadores de escritorio.
+
+### Selector de archivos en edicion movil
+
+Adicionalmente, se detecto que al editar una nota en movil el campo de seleccion de archivos no era visible, ya que la edicion inline no incluye input de archivo. La solucion fue redirigir siempre al formulario completo (`NoteForm`) al editar en movil, en lugar de activar el modo de edicion inline.
+
+---
+
+## Modo demo
+
+La aplicacion soporta tres modos de operacion controlados por la variable `VITE_API_MODE`:
+
+| Valor | Comportamiento |
+|-------|---------------|
+| `demo` | Conecta al backend Express (produccion y desarrollo) |
+| `real` | Conecta a una API externa configurable |
+| `mock` | Usa datos mock locales del frontend, sin backend |
+
+Cuando el modo es `demo`, el backend acepta cualquier combinacion de correo y contrasena no vacios como autenticacion valida. Esto permite probar el flujo completo sin credenciales reales.
+
+---
+
+## Instalacion y ejecucion
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/dienton82/Gestor-de-Notas.git
+cd Gestor-de-Notas
+```
+
+### 2. Instalar dependencias
 
 ```bash
 npm install
 npm --prefix backend install
 ```
 
-### 2. Ejecutar
+### 3. Configurar variables de entorno
+
+Crear `.env` en la raiz del proyecto y `backend/.env` dentro de la carpeta backend (ver seccion de variables de entorno mas abajo).
+
+### 4. Ejecutar en desarrollo
 
 Backend:
 
@@ -72,13 +157,13 @@ Backend:
 npm run dev:backend
 ```
 
-Frontend:
+Frontend (en otra terminal):
 
 ```bash
 npm run dev
 ```
 
-### 3. Build de produccion
+### 5. Build de produccion
 
 ```bash
 npm run build
@@ -96,14 +181,6 @@ VITE_DEMO_API_URL=http://localhost:4000
 VITE_APP_BASE_PATH=/
 ```
 
-Valores de `VITE_API_MODE`:
-
-| Valor | Comportamiento |
-|-------|---------------|
-| `demo` | Usa el backend Express (produccion y desarrollo) |
-| `real` | Usa API externa configurable |
-| `mock` | Usa mock local del frontend |
-
 ### Backend (backend/.env)
 
 ```bash
@@ -118,13 +195,13 @@ CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 | Variable | Descripcion |
 |----------|------------|
 | `PORT` | Puerto del servidor Express |
-| `PUBLIC_API_URL` | URL publica del backend (para construir URLs de archivos) |
+| `PUBLIC_API_URL` | URL publica del backend |
 | `ALLOWED_ORIGINS` | Dominios permitidos por CORS, separados por coma |
-| `CLOUDINARY_CLOUD_NAME` | Nombre del cloud en Cloudinary |
-| `CLOUDINARY_UNSIGNED_UPLOAD_PRESET` | Preset unsigned para subida de PDFs |
-| `CLOUDINARY_UPLOAD_FOLDER` | Carpeta logica en Cloudinary para organizar uploads |
+| `CLOUDINARY_CLOUD_NAME` | Cloud name de Cloudinary |
+| `CLOUDINARY_UNSIGNED_UPLOAD_PRESET` | Nombre del preset unsigned para subida de PDFs |
+| `CLOUDINARY_UPLOAD_FOLDER` | Carpeta de destino en Cloudinary |
 
-Si las variables de Cloudinary no estan definidas, el backend usa un fallback local (no persistente entre reinicios).
+Si las variables de Cloudinary no estan definidas, el backend utiliza almacenamiento local como fallback (no persistente entre reinicios en Render).
 
 ---
 
@@ -138,7 +215,7 @@ Si las variables de Cloudinary no estan definidas, el backend usa un fallback lo
 | Build command | `npm run build` |
 | Output directory | `dist` |
 
-Variables en Vercel:
+Variables requeridas en Vercel:
 
 ```bash
 VITE_API_MODE=demo
@@ -154,38 +231,22 @@ VITE_APP_BASE_PATH=/
 | Build command | `npm install` |
 | Start command | `npm start` |
 
-Variables en Render:
+Variables requeridas en Render:
 
 ```bash
 PORT=4000
 PUBLIC_API_URL=https://gestor-de-notas-8h9n.onrender.com
 ALLOWED_ORIGINS=https://gestor-notas-topaz.vercel.app
-CLOUDINARY_CLOUD_NAME=dneam8g56
-CLOUDINARY_UNSIGNED_UPLOAD_PRESET=gestor-notas-demo-pdf
+CLOUDINARY_CLOUD_NAME=<tu-cloud-name>
+CLOUDINARY_UNSIGNED_UPLOAD_PRESET=<tu-preset>
 CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 ```
 
 ### Configuracion requerida en Cloudinary
 
-Para que los PDFs se visualicen correctamente:
-
-1. Crear un **Upload Preset** con modo **Unsigned** y delivery type **Upload** (no Authenticated)
-2. En **Settings > Security**, activar **"Allow delivery of PDF and ZIP files"**
-3. Verificar que **Strict transformations** este deshabilitado
-
----
-
-## API demo
-
-| Metodo | Endpoint | Descripcion |
-|--------|----------|------------|
-| POST | `/auth/signin` | Login (cualquier credencial no vacia) |
-| GET | `/note/` | Listar notas |
-| GET | `/note/:noteCode` | Obtener nota individual |
-| POST | `/note/` | Crear nota (soporta FormData con adjunto) |
-| PATCH | `/note/:noteCode` | Actualizar nota |
-| DELETE | `/note/:noteCode` | Eliminar nota |
-| GET | `/health` | Health check |
+1. Crear un **Upload Preset** con modo **Unsigned** y delivery type **Upload** (no Authenticated).
+2. En **Settings > Security**, activar **"Allow delivery of PDF and ZIP files"**.
+3. Verificar que **Strict transformations** este deshabilitado.
 
 ---
 
@@ -194,24 +255,52 @@ Para que los PDFs se visualicen correctamente:
 ```
 gestor-notas/
   backend/
-    data/          Datos semilla y runtime
-    public/        PDFs demo estaticos
-    server.js      API Express
+    data/              Datos semilla y runtime
+    public/            PDFs demo estaticos
+    server.js          API Express
     package.json
   src/
-    api/           Cliente HTTP (Axios)
-    components/    Componentes reutilizables
-    config/        Configuracion de entornos y URLs
-    layouts/       Layouts de autenticacion y principal
-    mocks/         Fallback mock local
-    pages/         Vistas principales
-    router/        Rutas y guards de navegacion
-    stores/        Estado global (Pinia)
-    utils/         Helpers de seguridad, errores y adjuntos
-    main.js        Entry point
-  vercel.json      Rewrite para SPA
-  vite.config.js   Configuracion de Vite
+    api/               Cliente HTTP (Axios)
+    components/        Componentes reutilizables (NoteCard, ConfirmDialog, Spinner)
+    config/            Configuracion de modos y URLs
+    layouts/           Layouts de autenticacion y principal
+    mocks/             Fallback mock local
+    pages/             Vistas: Login, NotesList, NoteForm, NoteDetail
+    router/            Rutas y guards de navegacion
+    stores/            Estado global con Pinia (auth, notes)
+    utils/             Helpers: seguridad, errores, adjuntos, assets
+    main.js            Entry point
+  index.html           HTML base
+  vercel.json          Rewrites para SPA en Vercel
+  vite.config.js       Configuracion de Vite
+  tailwind.config.js   Configuracion de Tailwind
+  postcss.config.js    Configuracion de PostCSS
 ```
+
+---
+
+## Endpoints principales
+
+| Metodo | Endpoint | Descripcion |
+|--------|----------|------------|
+| POST | `/auth/signin` | Login (cualquier credencial no vacia) |
+| GET | `/note/` | Listar todas las notas |
+| GET | `/note/:noteCode` | Obtener una nota por codigo |
+| POST | `/note/` | Crear nota (acepta FormData con adjunto PDF) |
+| PATCH | `/note/:noteCode` | Actualizar nota |
+| DELETE | `/note/:noteCode` | Eliminar nota |
+| GET | `/health` | Health check del servidor |
+
+---
+
+## Consideraciones tecnicas
+
+- El header `Content-Type` no se define manualmente en las peticiones con `FormData`. Esto permite que Axios genere automaticamente el boundary correcto para `multipart/form-data`.
+- Los archivos se codifican como data URI base64 en el backend antes de enviarse a Cloudinary. Esto evita problemas conocidos con `Blob` y `FormData` nativo de Node.js al serializar binarios para multipart.
+- Los uploads a Cloudinary usan un preset unsigned, lo que elimina la necesidad de exponer `API_KEY` o `API_SECRET` en el servidor.
+- La sanitizacion de URLs de adjuntos se realiza en el frontend (`sanitizeExternalUrl`) antes de renderizar cualquier enlace, aceptando unicamente protocolos `http:`, `https:`, `blob:` y data URIs de tipo `application/pdf`.
+- Las guardas de navegacion en Vue Router protegen las rutas autenticadas y redirigen al login cuando no hay sesion activa.
+- El backend soporta CORS configurable por variable de entorno, aceptando multiples origenes separados por coma.
 
 ---
 
@@ -224,7 +313,7 @@ Email:    test.user4@prolibu.com
 Password: Prolibu2025!
 ```
 
-En el backend demo se permite cualquier correo y contrasena no vacios.
+En el backend demo se acepta cualquier correo y contrasena no vacios.
 
 ---
 
