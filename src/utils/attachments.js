@@ -1,5 +1,9 @@
 import { sanitizeExternalUrl } from './security'
 
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
 export function getAttachmentLinkAttributes(attachment) {
   const href = sanitizeExternalUrl(attachment?.url || '')
 
@@ -12,12 +16,31 @@ export function getAttachmentLinkAttributes(attachment) {
     }
   }
 
-  const shouldDownload = href.startsWith('data:') || href.startsWith('blob:')
+  const isDataOrBlob = href.startsWith('data:') || href.startsWith('blob:')
+
+  if (isDataOrBlob) {
+    return {
+      href,
+      target: undefined,
+      rel: undefined,
+      download: attachment?.name || 'adjunto'
+    }
+  }
+
+  // En Android, target=_blank puede fallar; abrir en misma pestaña
+  if (isMobileDevice()) {
+    return {
+      href,
+      target: '_self',
+      rel: undefined,
+      download: undefined
+    }
+  }
 
   return {
     href,
-    target: shouldDownload ? undefined : '_blank',
-    rel: shouldDownload ? undefined : 'noopener noreferrer',
-    download: shouldDownload ? attachment?.name || 'adjunto' : undefined
+    target: '_blank',
+    rel: 'noopener noreferrer',
+    download: undefined
   }
 }

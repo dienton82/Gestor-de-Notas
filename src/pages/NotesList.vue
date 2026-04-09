@@ -299,11 +299,6 @@ function handlePointerDown(event) {
 }
 
 function editNote(nota) {
-  if (isMobileViewport.value) {
-    startInline(nota)
-    return
-  }
-
   router.push(`/notes/${nota.noteCode}/edit`)
 }
 
