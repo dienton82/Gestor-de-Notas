@@ -317,6 +317,38 @@ En el backend demo se acepta cualquier correo y contrasena no vacios.
 
 ---
 
+## Uso de IA en el desarrollo
+
+Este proyecto se desarrollo con apoyo activo de herramientas de inteligencia artificial (GitHub Copilot, Claude, ChatGPT) aplicadas a problemas tecnicos concretos durante todo el ciclo de desarrollo.
+
+### Donde se aplico
+
+- **Debugging de integraciones.** Diagnostico de errores de CORS entre Vercel y Render, identificacion de conflictos entre el header `Content-Type: application/json` por defecto de Axios y el boundary requerido por `multipart/form-data` en uploads con Multer.
+- **Resolucion de problemas de Cloudinary.** Analisis de errores 401 y 502 al subir archivos: el uso de `new Blob()` en Node.js no serializaba correctamente el binario para multipart, el parametro `access_mode=public` era rechazado en uploads unsigned, y la transformacion `fl_attachment:false` no es compatible con recursos de tipo `raw`. Cada causa se aislo iterativamente con apoyo de la IA para interpretar respuestas de la API y proponer alternativas.
+- **Codificacion de flujos complejos.** Generacion del pipeline de upload base64 (buffer a data URI, construccion de FormData en el backend, envio a Cloudinary sin SDK), incluyendo las variantes que se descartaron y por que.
+- **Ajustes de UI/UX.** Iteracion rapida sobre el layout del sidebar (fecha arriba, botones abajo, `justify-content: space-between`) con media queries que preservan el comportamiento en mobile sin romper desktop.
+- **Logica condicional por plataforma.** Implementacion de deteccion de dispositivos moviles via `navigator.userAgent` y bifurcacion del comportamiento de enlaces de adjuntos segun el contexto (ver caso concreto mas abajo).
+
+### Caso concreto: apertura de PDFs en Android
+
+**Problema.** Los enlaces a PDFs almacenados en Cloudinary no se abrian en navegadores Android. El usuario tocaba el enlace y no ocurria nada visible.
+
+**Diagnostico con IA.** Se analizo el comportamiento de `target="_blank"` en Chrome para Android y se identifico que el navegador puede bloquear silenciosamente la apertura de nuevas pestanas cuando el gesto del usuario no se procesa de forma sincrona o cuando la politica de popups del navegador interviene. La IA ayudo a descartar causas alternativas (CORS, Content-Disposition, tipo MIME) y a focalizar el diagnostico en el manejo del evento de clic.
+
+**Solucion.** Se implemento un handler `@click` en los tres componentes que renderizan enlaces a PDF (`NoteCard`, `NoteDetail`, `NoteForm`). En dispositivos moviles, el handler intercepta el evento y ejecuta `window.open()` de forma sincrona dentro del gesto del usuario, lo que los navegadores moviles aceptan de forma consistente. En escritorio, el handler no interviene.
+
+**Resultado.** PDFs abren correctamente en Android e iOS sin afectar el comportamiento en desktop.
+
+### Que aporto
+
+- **Iteracion rapida sobre errores de integracion.** Problemas que normalmente requieren horas de lectura de documentacion y prueba-error (como el pipeline de upload a Cloudinary sin SDK) se resolvieron en ciclos cortos de diagnostico-propuesta-validacion.
+- **Descarte eficiente de hipotesis.** En el caso de Android, la IA ayudo a descartar rapidamente causas que no aplicaban (headers del servidor, configuracion de Cloudinary, sanitizacion de URLs) para llegar a la causa real: el manejo del evento de clic por el navegador.
+- **Codigo mas limpio en la primera iteracion.** La generacion asistida de funciones como `openAttachment()` y `getAttachmentLinkAttributes()` incluyo desde el inicio la separacion de responsabilidades y la cobertura de edge cases (data URIs, blob URLs, URLs vacias).
+
+La IA se uso como herramienta de ingenieria para acelerar el diagnostico y la implementacion, no como sustituto del criterio tecnico. Cada solucion propuesta fue evaluada, probada y adaptada al contexto real del proyecto antes de integrarse.
+
+---
+
 ## Licencia
 
 MIT -- [dienton82](https://github.com/dienton82)
