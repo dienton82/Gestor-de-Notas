@@ -54,8 +54,10 @@ export function normalizeNotesError(error) {
     }
   }
 
+  const serverMessage = error?.response?.data?.message
+
   return {
     code: 'NOTES_REQUEST_FAILED',
-    message: 'No fue posible completar la operación. Intenta nuevamente.'
+    message: serverMessage || 'No fue posible completar la operación. Intenta nuevamente.'
   }
 }

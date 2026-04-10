@@ -324,7 +324,7 @@ function requireAuth(req, _res, next) {
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024
+    fileSize: 10 * 1024 * 1024
   }
 })
 
@@ -541,8 +541,17 @@ app.delete('/note/:noteCode', requireAuth, (req, res, next) => {
 })
 
 app.use((error, _req, res, _next) => {
+  if (error?.code === 'LIMIT_FILE_SIZE') {
+    res.status(413).json({
+      message: 'El archivo excede el tamaño máximo permitido (10 MB).'
+    })
+    return
+  }
+
   const status = Number(error?.status || 500)
   const message = error?.message || 'Error interno del servidor'
+
+  console.error('[ERROR]', status, message)
 
   res.status(status).json({
     message

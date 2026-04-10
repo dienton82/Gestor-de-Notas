@@ -130,6 +130,11 @@ async function onSubmit() {
     return
   }
 
+  if (file.value && file.value.size > 10 * 1024 * 1024) {
+    error.value = 'El archivo excede el tamaño máximo permitido (10 MB).'
+    return
+  }
+
   try {
     if (isEdit) {
       await store.updateNote(noteCode, { content: normalizedContent, file: file.value })
