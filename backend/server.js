@@ -114,10 +114,16 @@ function serializeAttachment(req, attachment, noteCode) {
     noteCode
   })
 
-  return {
+  const result = {
     name: attachment?.name || 'adjunto-demo',
     url
   }
+
+  if (typeof attachment?.size === 'number' && attachment.size > 0) {
+    result.size = attachment.size
+  }
+
+  return result
 }
 
 function serializeNote(req, note) {
@@ -227,6 +233,7 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
   return {
     name: file.originalname || 'adjunto-demo.pdf',
     mimeType: resolveAttachmentMimeType(file.originalname, file.mimetype),
+    size: payload.bytes || file.buffer.length,
     storage: 'cloudinary',
     publicId: payload.public_id,
     url: finalUrl
@@ -449,6 +456,7 @@ app.post('/note/', requireAuth, upload.single('attachment'), (req, res, next) =>
         : {
             name: req.file.originalname || 'adjunto-demo.pdf',
             mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
+            size: req.file.buffer.length,
             dataUrl: fileToDataUrl(req.file)
           }
       : null
@@ -488,6 +496,7 @@ app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res
             : {
                 name: req.file.originalname || 'adjunto-demo.pdf',
                 mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
+                size: req.file.buffer.length,
                 dataUrl: fileToDataUrl(req.file)
               }
         ]
