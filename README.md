@@ -2,7 +2,7 @@
 
 Aplicacion web SPA para la gestion de notas personales con soporte de adjuntos PDF. Construida con Vue 3, Vite y Pinia en el frontend, y un backend Express desplegado de forma independiente. Los archivos adjuntos se persisten en Cloudinary, lo que permite mantener el almacenamiento entre reinicios del servidor sin depender del filesystem efimero del hosting.
 
-**Demo publica:** [https://gestor-notas-topaz.vercel.app](https://gestor-notas-topaz.vercel.app)
+**Aplicacion en linea:** [https://gestor-notas-topaz.vercel.app](https://gestor-notas-topaz.vercel.app)
 
 ---
 
@@ -38,11 +38,11 @@ Aplicacion web SPA para la gestion de notas personales con soporte de adjuntos P
 - Ordenamiento por fecha de creacion
 - Paginacion con controles de navegacion
 - Agrupacion temporal: Hoy, Ayer, Esta semana, Anteriores
-- Adjuntos PDF con persistencia real en Cloudinary
-- Visualizacion directa de PDF en el navegador (sin forzar descarga)
-- Descarga de adjuntos cuando corresponde
-- Autenticacion demo (cualquier correo y contrasena no vacios)
-- Modo demo / modo mock como fallback cuando el backend no esta disponible
+- Adjuntos PDF con persistencia en Cloudinary
+- Visualizacion directa de PDF en el navegador
+- Validacion de tamano de archivo (limite de 10 MB)
+- Autenticacion con sesion basada en token
+- Modo offline con almacenamiento local cuando el backend no esta disponible
 - UI responsive optimizada para escritorio y movil
 
 ---
@@ -57,7 +57,7 @@ Aplicacion web SPA para la gestion de notas personales con soporte de adjuntos P
 
 El frontend se comunica con el backend a traves de una API REST. Cuando el usuario sube un PDF, el archivo llega al backend a traves de Multer (almacenamiento en memoria), se convierte a un data URI en base64 y se envia a Cloudinary como recurso de tipo `raw`. La URL publica resultante se almacena junto con la nota y se entrega directamente al navegador del usuario.
 
-Si el backend no esta disponible o las variables de Cloudinary no estan configuradas, el sistema puede operar en modo mock local (sin persistencia de archivos entre sesiones).
+Si el backend no esta disponible o las variables de Cloudinary no estan configuradas, el sistema opera con almacenamiento local (sin persistencia de archivos entre sesiones del servidor).
 
 ---
 
@@ -67,7 +67,7 @@ El flujo de subida de archivos sigue estos pasos:
 
 1. El usuario selecciona un PDF desde el formulario de creacion o edicion de notas.
 2. El frontend envia el archivo como `FormData` (sin header `Content-Type` explicito para que Axios genere el boundary correcto).
-3. El backend recibe el archivo con Multer en modo memoria.
+3. El backend recibe el archivo con Multer en modo memoria (limite: 10 MB).
 4. El buffer del archivo se codifica como data URI base64 (`data:application/pdf;base64,...`).
 5. Se construye un `FormData` con el data URI, el `upload_preset` unsigned y la carpeta de destino.
 6. Se envia a la API de Cloudinary como recurso `raw`.
@@ -81,15 +81,15 @@ Para la visualizacion, los enlaces apuntan directamente a la URL de Cloudinary c
 
 ### Problema original
 
-En dispositivos Android, los enlaces a PDFs externos con `target="_blank"` presentaban un comportamiento inconsistente: en algunos navegadores el enlace no se abria, o el sistema lo bloqueaba silenciosamente sin dar feedback al usuario. Esto afectaba directamente la funcionalidad principal de visualizacion de adjuntos.
+En dispositivos Android, los enlaces a PDFs externos con `target="_blank"` presentaban un comportamiento inconsistente: en algunos navegadores el enlace no se abria, o el sistema lo bloqueaba silenciosamente sin dar feedback al usuario.
 
 ### Causa
 
-Los navegadores moviles (especialmente Chrome en Android) pueden bloquear o ignorar la apertura de nuevas pestanas cuando el clic se procesa de forma asincrona o cuando el atributo `target="_blank"` no se maneja dentro del contexto de un gesto directo del usuario. El comportamiento varia segun el dispositivo, la version del navegador y la politica de popups.
+Los navegadores moviles (especialmente Chrome en Android) pueden bloquear o ignorar la apertura de nuevas pestanas cuando el clic se procesa de forma asincrona o cuando el atributo `target="_blank"` no se maneja dentro del contexto de un gesto directo del usuario.
 
 ### Solucion implementada
 
-Se agrego un handler de clic programatico en todos los componentes que renderizan enlaces a PDF (`NoteCard`, `NoteDetail`, `NoteForm`). En dispositivos moviles (detectados via `navigator.userAgent`), el handler intercepta el evento del enlace y ejecuta `window.open(href, '_blank', 'noopener,noreferrer')` de forma sincrona dentro del gesto del usuario:
+Se agrego un handler de clic programatico en todos los componentes que renderizan enlaces a PDF (`NoteCard`, `NoteDetail`, `NoteForm`). En dispositivos moviles, el handler intercepta el evento y ejecuta `window.open()` de forma sincrona dentro del gesto del usuario:
 
 ```js
 export function openAttachment(event, attachment) {
@@ -111,21 +111,21 @@ Los PDFs se abren correctamente en Android y iOS sin ser bloqueados, manteniendo
 
 ### Selector de archivos en edicion movil
 
-Adicionalmente, se detecto que al editar una nota en movil el campo de seleccion de archivos no era visible, ya que la edicion inline no incluye input de archivo. La solucion fue redirigir siempre al formulario completo (`NoteForm`) al editar en movil, en lugar de activar el modo de edicion inline.
+Al editar una nota en movil, el campo de seleccion de archivos no era visible en la edicion inline. La solucion fue redirigir siempre al formulario completo (`NoteForm`) al editar en movil, en lugar de activar el modo de edicion inline.
 
 ---
 
-## Modo demo
+## Modos de operacion
 
-La aplicacion soporta tres modos de operacion controlados por la variable `VITE_API_MODE`:
+La aplicacion soporta tres modos controlados por la variable `VITE_API_MODE`:
 
 | Valor | Comportamiento |
 |-------|---------------|
-| `demo` | Conecta al backend Express (produccion y desarrollo) |
+| `demo` | Conecta al backend Express propio (produccion y desarrollo) |
 | `real` | Conecta a una API externa configurable |
-| `mock` | Usa datos mock locales del frontend, sin backend |
+| `mock` | Opera con almacenamiento local en el navegador, sin backend |
 
-Cuando el modo es `demo`, el backend acepta cualquier combinacion de correo y contrasena no vacios como autenticacion valida. Esto permite probar el flujo completo sin credenciales reales.
+El modo por defecto en produccion es `demo`, que conecta al backend Express desplegado en Render.
 
 ---
 
@@ -189,7 +189,7 @@ PUBLIC_API_URL=http://localhost:4000
 ALLOWED_ORIGINS=http://localhost:5173
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_UNSIGNED_UPLOAD_PRESET=
-CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
+CLOUDINARY_UPLOAD_FOLDER=gestor-notas
 ```
 
 | Variable | Descripcion |
@@ -201,7 +201,7 @@ CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 | `CLOUDINARY_UNSIGNED_UPLOAD_PRESET` | Nombre del preset unsigned para subida de PDFs |
 | `CLOUDINARY_UPLOAD_FOLDER` | Carpeta de destino en Cloudinary |
 
-Si las variables de Cloudinary no estan definidas, el backend utiliza almacenamiento local como fallback (no persistente entre reinicios en Render).
+Si las variables de Cloudinary no estan definidas, el backend utiliza almacenamiento local (no persistente entre reinicios en Render).
 
 ---
 
@@ -239,7 +239,7 @@ PUBLIC_API_URL=https://gestor-de-notas-8h9n.onrender.com
 ALLOWED_ORIGINS=https://gestor-notas-topaz.vercel.app
 CLOUDINARY_CLOUD_NAME=<tu-cloud-name>
 CLOUDINARY_UNSIGNED_UPLOAD_PRESET=<tu-preset>
-CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
+CLOUDINARY_UPLOAD_FOLDER=gestor-notas
 ```
 
 ### Configuracion requerida en Cloudinary
@@ -255,8 +255,8 @@ CLOUDINARY_UPLOAD_FOLDER=gestor-notas-demo
 ```
 gestor-notas/
   backend/
-    data/              Datos semilla y runtime
-    public/            PDFs demo estaticos
+    data/              Datos iniciales y runtime
+    public/            Archivos estaticos del servidor
     server.js          API Express
     package.json
   src/
@@ -264,7 +264,7 @@ gestor-notas/
     components/        Componentes reutilizables (NoteCard, ConfirmDialog, Spinner)
     config/            Configuracion de modos y URLs
     layouts/           Layouts de autenticacion y principal
-    mocks/             Fallback mock local
+    mocks/             Almacenamiento local offline
     pages/             Vistas: Login, NotesList, NoteForm, NoteDetail
     router/            Rutas y guards de navegacion
     stores/            Estado global con Pinia (auth, notes)
@@ -283,7 +283,7 @@ gestor-notas/
 
 | Metodo | Endpoint | Descripcion |
 |--------|----------|------------|
-| POST | `/auth/signin` | Login (cualquier credencial no vacia) |
+| POST | `/auth/signin` | Autenticacion |
 | GET | `/note/` | Listar todas las notas |
 | GET | `/note/:noteCode` | Obtener una nota por codigo |
 | POST | `/note/` | Crear nota (acepta FormData con adjunto PDF) |
@@ -301,6 +301,7 @@ gestor-notas/
 - La sanitizacion de URLs de adjuntos se realiza en el frontend (`sanitizeExternalUrl`) antes de renderizar cualquier enlace, aceptando unicamente protocolos `http:`, `https:`, `blob:` y data URIs de tipo `application/pdf`.
 - Las guardas de navegacion en Vue Router protegen las rutas autenticadas y redirigen al login cuando no hay sesion activa.
 - El backend soporta CORS configurable por variable de entorno, aceptando multiples origenes separados por coma.
+- Los errores del servidor se propagan al frontend con el mensaje original, permitiendo diagnosticos claros en la interfaz.
 
 ---
 
@@ -313,7 +314,7 @@ Email:    test.user4@prolibu.com
 Password: Prolibu2025!
 ```
 
-En el backend demo se acepta cualquier correo y contrasena no vacios.
+El backend acepta cualquier correo y contrasena no vacios.
 
 ---
 
@@ -327,7 +328,7 @@ Este proyecto se desarrollo con apoyo activo de herramientas de inteligencia art
 - **Resolucion de problemas de Cloudinary.** Analisis de errores 401 y 502 al subir archivos: el uso de `new Blob()` en Node.js no serializaba correctamente el binario para multipart, el parametro `access_mode=public` era rechazado en uploads unsigned, y la transformacion `fl_attachment:false` no es compatible con recursos de tipo `raw`. Cada causa se aislo iterativamente con apoyo de la IA para interpretar respuestas de la API y proponer alternativas.
 - **Codificacion de flujos complejos.** Generacion del pipeline de upload base64 (buffer a data URI, construccion de FormData en el backend, envio a Cloudinary sin SDK), incluyendo las variantes que se descartaron y por que.
 - **Ajustes de UI/UX.** Iteracion rapida sobre el layout del sidebar (fecha arriba, botones abajo, `justify-content: space-between`) con media queries que preservan el comportamiento en mobile sin romper desktop.
-- **Logica condicional por plataforma.** Implementacion de deteccion de dispositivos moviles via `navigator.userAgent` y bifurcacion del comportamiento de enlaces de adjuntos segun el contexto (ver caso concreto mas abajo).
+- **Logica condicional por plataforma.** Implementacion de deteccion de dispositivos moviles via `navigator.userAgent` y bifurcacion del comportamiento de enlaces de adjuntos segun el contexto.
 
 ### Caso concreto: apertura de PDFs en Android
 

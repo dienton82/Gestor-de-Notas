@@ -13,10 +13,10 @@
         <Info :size="16" :class="styles.noticeIcon" />
       </div>
       <div :class="styles.noticeBody">
-        <p :class="styles.noticeTitle">Demo pública disponible</p>
+        <p :class="styles.noticeTitle">Acceso rapido</p>
         <p :class="styles.noticeText">
-          Esta demo incluye credenciales precargadas para facilitar el acceso. Si la API externa
-          no está disponible, la aplicación puede continuar en modo demostración.
+          Las credenciales estan precargadas para facilitar el ingreso.
+          Puedes usar cualquier correo y contrasena validos.
         </p>
       </div>
     </div>

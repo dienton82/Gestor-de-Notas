@@ -84,7 +84,7 @@ function fileToDataUrl(file) {
 
 async function buildNotePayload(existing, payload) {
   const content = readFormDataValue(payload, 'content') || existing?.contentText || ''
-  const title = readFormDataValue(payload, 'title') || existing?.title || existing?.noteCode || 'Nota demo'
+  const title = readFormDataValue(payload, 'title') || existing?.title || existing?.noteCode || 'Sin titulo'
   const file = readFormDataValue(payload, 'attachment')
   const attachmentUrl = file ? await fileToDataUrl(file) : ''
 
@@ -96,7 +96,7 @@ async function buildNotePayload(existing, payload) {
     attachments: file
       ? [
           {
-            name: file.name || 'adjunto-demo',
+            name: file.name || 'adjunto',
             url: attachmentUrl
           }
         ]
@@ -151,7 +151,7 @@ const mockApiClient = {
       ensureAuthenticated(config.headers || this.defaults.headers.common)
 
       const notes = readNotes()
-      const noteCode = `DEMO-${Date.now().toString().slice(-6)}`
+      const noteCode = `NOT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`
       const created = {
         noteCode,
         createdAt: new Date().toISOString(),

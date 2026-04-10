@@ -1,30 +1,30 @@
 [
   {
-    "noteCode": "DEMO-001",
-    "title": "DEMO-001",
-    "content": "Seguimiento del despliegue en GitHub Pages. Esta nota demuestra la navegación y el layout cuando la API real no está disponible en la demo pública.",
-    "contentText": "Seguimiento del despliegue en GitHub Pages. Esta nota demuestra la navegación y el layout cuando la API real no está disponible en la demo pública.",
+    "noteCode": "NOT-2026-001",
+    "title": "Reunion de seguimiento semanal",
+    "content": "Revision de avances del proyecto y asignacion de tareas pendientes para el proximo sprint. Se acordaron fechas de entrega y responsables por modulo.",
+    "contentText": "Revision de avances del proyecto y asignacion de tareas pendientes para el proximo sprint. Se acordaron fechas de entrega y responsables por modulo.",
     "createdAt": "2026-04-07T08:30:00.000Z",
     "attachments": [
       {
-        "name": "brief-demo.pdf",
+        "name": "acta-reunion.pdf",
         "path": "demo/brief-demo.pdf"
       }
     ]
   },
   {
-    "noteCode": "DEMO-002",
-    "title": "DEMO-002",
-    "content": "Pendiente: habilitar proxy en desarrollo local si se quiere evitar bloqueo del navegador al apuntar al backend externo desde otra URL.",
-    "contentText": "Pendiente: habilitar proxy en desarrollo local si se quiere evitar bloqueo del navegador al apuntar al backend externo desde otra URL.",
+    "noteCode": "NOT-2026-002",
+    "title": "Pendientes del proyecto",
+    "content": "Configurar variables de entorno en el servidor de produccion. Revisar integracion con el servicio de almacenamiento externo y validar permisos de CORS.",
+    "contentText": "Configurar variables de entorno en el servidor de produccion. Revisar integracion con el servicio de almacenamiento externo y validar permisos de CORS.",
     "createdAt": "2026-04-05T14:15:00.000Z",
     "attachments": []
   },
   {
-    "noteCode": "DEMO-003",
-    "title": "DEMO-003",
-    "content": "La UI sigue operativa en modo demo: puedes crear, editar y eliminar notas de ejemplo sin depender del backend remoto.",
-    "contentText": "La UI sigue operativa en modo demo: puedes crear, editar y eliminar notas de ejemplo sin depender del backend remoto.",
+    "noteCode": "NOT-2026-003",
+    "title": "Acta de comite tecnico",
+    "content": "Se aprobo la arquitectura propuesta para el flujo de adjuntos. El equipo de backend se encargara de la integracion con Cloudinary y el frontend ajustara la visualizacion de PDFs.",
+    "contentText": "Se aprobo la arquitectura propuesta para el flujo de adjuntos. El equipo de backend se encargara de la integracion con Cloudinary y el frontend ajustara la visualizacion de PDFs.",
     "createdAt": "2026-04-03T18:00:00.000Z",
     "attachments": []
   }

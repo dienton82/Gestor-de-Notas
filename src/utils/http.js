@@ -17,7 +17,7 @@ export function normalizeAuthError(error) {
     return {
       code: 'AUTH_INVALID_CREDENTIALS',
       message: 'Email o contraseña inválidos',
-      canContinueInDemo: false,
+      canRetry: false,
       isNetworkError: false
     }
   }
@@ -26,7 +26,7 @@ export function normalizeAuthError(error) {
     return {
       code: 'AUTH_NETWORK_ERROR',
       message: 'No fue posible conectar con el servidor de autenticación.',
-      canContinueInDemo: false,
+      canRetry: false,
       isNetworkError: true
     }
   }
@@ -34,7 +34,7 @@ export function normalizeAuthError(error) {
   return {
     code: 'AUTH_REQUEST_FAILED',
     message: 'No fue posible iniciar sesion. Intenta de nuevo en unos momentos.',
-    canContinueInDemo: false,
+    canRetry: false,
     isNetworkError: false
   }
 }

@@ -17,4 +17,4 @@ export const API_URL = useApiProxyInDev
   : (useDemoBackend ? rawDemoApiUrl : rawRealApiUrl).replace(/\/+$/, '')
 
 export const MOCK_DEMO_MESSAGE =
-  'La demo pública usa un backend demo dedicado para mantener el flujo funcional sin depender de la API externa.'
+  'El backend propio esta activo para mantener el flujo funcional de la aplicacion.'

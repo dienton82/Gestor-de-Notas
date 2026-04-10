@@ -20,19 +20,19 @@ function buildNote(noteCode, contentText, createdAt, attachmentName) {
 
 const demoNotes = [
   buildNote(
-    'DEMO-001',
-    'Seguimiento del despliegue en GitHub Pages. Esta nota demuestra la navegacion y el layout cuando la API real no esta disponible en la demo publica.',
+    'NOT-2026-001',
+    'Revision de avances del proyecto y asignacion de tareas pendientes para el proximo sprint. Se acordaron fechas de entrega y responsables por modulo.',
     '2026-04-07T08:30:00.000Z',
     'brief-demo.pdf'
   ),
   buildNote(
-    'DEMO-002',
-    'Pendiente: habilitar proxy en desarrollo local si se quiere evitar bloqueo del navegador al apuntar al backend externo desde otra URL.',
+    'NOT-2026-002',
+    'Configurar variables de entorno en el servidor de produccion. Revisar integracion con el servicio de almacenamiento externo y validar permisos de CORS.',
     '2026-04-05T14:15:00.000Z'
   ),
   buildNote(
-    'DEMO-003',
-    'La UI sigue operativa en modo demo: puedes crear, editar y eliminar notas de ejemplo sin depender del backend remoto.',
+    'NOT-2026-003',
+    'Se aprobo la arquitectura propuesta para el flujo de adjuntos. El equipo de backend se encargara de la integracion con Cloudinary y el frontend ajustara la visualizacion de PDFs.',
     '2026-04-03T18:00:00.000Z'
   )
 ]

@@ -115,7 +115,7 @@ function serializeAttachment(req, attachment, noteCode) {
   })
 
   const result = {
-    name: attachment?.name || 'adjunto-demo',
+    name: attachment?.name || 'adjunto',
     url
   }
 
@@ -141,7 +141,7 @@ function createHttpError(status, message) {
   return error
 }
 
-function sanitizeFilename(filename = 'adjunto-demo') {
+function sanitizeFilename(filename = 'adjunto') {
   const ext = path.extname(filename)
   const baseName = path.basename(filename, ext)
   const normalizedBase = baseName
@@ -150,11 +150,11 @@ function sanitizeFilename(filename = 'adjunto-demo') {
     .replace(/^-+|-+$/g, '')
     .slice(0, 40)
 
-  return `${normalizedBase || 'adjunto-demo'}${ext.toLowerCase()}`
+  return `${normalizedBase || 'adjunto'}${ext.toLowerCase()}`
 }
 
 function buildCloudinaryPublicId(noteCode, filename) {
-  const safeFilename = sanitizeFilename(filename || 'adjunto-demo.pdf')
+  const safeFilename = sanitizeFilename(filename || 'adjunto.pdf')
   const baseName = path.basename(safeFilename)
   return `${noteCode}-${Date.now()}-${baseName}`
 }
@@ -231,7 +231,7 @@ async function uploadAttachmentToCloudinary(file, noteCode) {
   console.log('[CLOUDINARY] Subida exitosa:', finalUrl)
 
   return {
-    name: file.originalname || 'adjunto-demo.pdf',
+    name: file.originalname || 'adjunto.pdf',
     mimeType: resolveAttachmentMimeType(file.originalname, file.mimetype),
     size: payload.bytes || file.buffer.length,
     storage: 'cloudinary',
@@ -277,14 +277,15 @@ function resolveAttachmentMimeType(filename = '', mimeType = '') {
   return normalizedMimeType || 'application/octet-stream'
 }
 
-function createDemoNoteCode() {
+function createNoteCode() {
+  const year = new Date().getFullYear()
   const maxNumber = notes.reduce((currentMax, note) => {
-    const match = String(note.noteCode || '').match(/^DEMO-(\d+)$/)
+    const match = String(note.noteCode || '').match(/^NOT-\d{4}-(\d+)$/)
     const numericCode = match ? Number(match[1]) : 0
     return Math.max(currentMax, numericCode)
   }, 0)
 
-  return `DEMO-${String(maxNumber + 1).padStart(3, '0')}`
+  return `NOT-${year}-${String(maxNumber + 1).padStart(3, '0')}`
 }
 
 function getFormValue(value, fallback = '') {
@@ -394,7 +395,7 @@ app.get('/files/runtime/:noteCode/:fileName', (req, res, next) => {
   )
   res.setHeader(
     'Content-Disposition',
-    `inline; filename="${sanitizeFilename(attachment.name || 'adjunto-demo.pdf')}"`
+    `inline; filename="${sanitizeFilename(attachment.name || 'adjunto.pdf')}"`
   )
   res.send(parsed.buffer)
 })
@@ -412,14 +413,13 @@ app.post('/auth/signin', (req, res, next) => {
       throw createHttpError(401, 'Ingresa tu correo y contraseña.')
     }
 
-    const token = `demo-jwt-${Date.now()}`
+    const token = `jwt-${Date.now()}`
     validTokens.add(token)
 
     res.json({
       apiKey: token,
       user: {
-        email,
-        demo: true
+        email
       }
     })
   } catch (error) {
@@ -448,13 +448,13 @@ app.post('/note/', requireAuth, upload.single('attachment'), (req, res, next) =>
   ;(async () => {
     const createdAt = new Date().toISOString()
     const content = getFormValue(req.body?.content)
-    const title = getFormValue(req.body?.title) || 'Nota demo'
-    const noteCode = createDemoNoteCode()
+    const title = getFormValue(req.body?.title) || 'Sin titulo'
+    const noteCode = createNoteCode()
     const uploadedAttachment = req.file
       ? useCloudinaryStorage()
         ? await uploadAttachmentToCloudinary(req.file, noteCode)
         : {
-            name: req.file.originalname || 'adjunto-demo.pdf',
+            name: req.file.originalname || 'adjunto.pdf',
             mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
             size: req.file.buffer.length,
             dataUrl: fileToDataUrl(req.file)
@@ -494,7 +494,7 @@ app.patch('/note/:noteCode', requireAuth, upload.single('attachment'), (req, res
           useCloudinaryStorage()
             ? await uploadAttachmentToCloudinary(req.file, existing.noteCode)
             : {
-                name: req.file.originalname || 'adjunto-demo.pdf',
+                name: req.file.originalname || 'adjunto.pdf',
                 mimeType: resolveAttachmentMimeType(req.file.originalname, req.file.mimetype),
                 size: req.file.buffer.length,
                 dataUrl: fileToDataUrl(req.file)
@@ -559,5 +559,5 @@ app.use((error, _req, res, _next) => {
 })
 
 app.listen(port, () => {
-  console.log(`Demo API lista en http://localhost:${port}`)
+  console.log(`API lista en http://localhost:${port}`)
 })
